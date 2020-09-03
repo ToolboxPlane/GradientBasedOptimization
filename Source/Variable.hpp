@@ -13,30 +13,37 @@ namespace grad {
     template <typename T>
     class Variable {
         public:
+            using type = T;
+            using dtype = Variable<T>;
+
             explicit Variable(T val);
 
             auto resolve() const -> T;
 
-            template<T _initialVal>
-            auto grad(const Variable<T, _initialVal> &d) const -> Variable<T, 1>;
+            auto grad(const Variable<T> &d) const -> dtype;
 
             void set(T t);
 
         private:
-            T val;
+            std::shared_ptr<T> val;
     };
 
     template<typename T>
-    Variable<T>::Variable(T val) : val{val}{}
+    Variable<T>::Variable(T val) : val{std::make_shared<T>(std::move(val))}{}
 
     template<typename T>
     auto Variable<T>::resolve() const -> T {
-        return val;
+        return *val;
     }
 
     template<typename T>
     void Variable<T>::set(T t) {
-        this->val = t;
+        *(this->val) = t;
+    }
+
+    template<typename T>
+    auto Variable<T>::grad(const Variable<T> &d) const -> Variable<T> {
+        return Variable<T>(this->val.get() == d.val.get()? 1 : 0);
     }
 }
 

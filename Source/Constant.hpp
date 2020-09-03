@@ -15,11 +15,11 @@ namespace grad {
     class Constant {
         public:
             using type = T;
+            using dtype = Constant<T, 0>;
 
             auto resolve() const -> T;
 
-            template<T initialVal>
-            auto grad(const Variable<T, initialVal> &d) const -> Constant<T, 0>;
+            auto grad(const Variable<T>&) const -> dtype;
     };
 
     template<typename T, T val>
@@ -28,8 +28,7 @@ namespace grad {
     }
 
     template<typename T, T val>
-    template<T initialVal>
-    auto Constant<T, val>::grad(const Variable<T, initialVal> &d) const -> Constant<T, 0> {
+    auto Constant<T, val>::grad(const Variable<T>&) const -> dtype {
         return Constant<T, 0>();
     }
 
