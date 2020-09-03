@@ -2,8 +2,8 @@
 
 #include "ConceptUtil.hpp"
 
-#include "Add.hpp"
-#include "Constant.hpp"
+#include "Symbolic/Add.hpp"
+#include "Symbolic/Constant.hpp"
 
 TEST(Add, Expression) {
     using Const = grad::Constant<int, 0>;

@@ -9,7 +9,7 @@
 
 #include "ConceptUtil.hpp"
 
-#include "Constant.hpp"
+#include "Symbolic/Constant.hpp"
 
 TEST(Constant, Expression) {
     EXPECT_TRUE((IsExpression<grad::Constant<int, 0>>::val));

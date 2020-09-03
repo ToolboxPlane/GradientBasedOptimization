@@ -2,7 +2,7 @@
 
 #include "ConceptUtil.hpp"
 
-#include <Variable.hpp>
+#include <Symbolic/Variable.hpp>
 
 TEST(Variable, Expression) {
     EXPECT_TRUE(IsExpression<grad::Variable<int>>::val);

@@ -7,7 +7,7 @@
 #ifndef GRADIENTOPTIMIZATION_CONCEPTUTIL_HPP
 #define GRADIENTOPTIMIZATION_CONCEPTUTIL_HPP
 
-#include "Expression.hpp"
+#include "Symbolic/Expression.hpp"
 
 template <typename T>
 struct IsExpression {

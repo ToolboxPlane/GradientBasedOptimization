@@ -6,9 +6,9 @@ if (GTest_FOUND)
     include_directories(${GTEST_INCLUDE_DIR})
 
     set(TEST_SOURCES
-            Add.cpp
-            Constant.cpp
-            Variable.cpp)
+            Symbolic/Add.cpp
+            Symbolic/Constant.cpp
+            Symbolic/Variable.cpp)
 
     include_directories(${CMAKE_SOURCE_DIR}/Source)
 
