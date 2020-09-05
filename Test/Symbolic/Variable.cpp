@@ -1,9 +1,15 @@
 #include <gtest/gtest.h>
 
+#include "Symbolic/Grad.hpp"
+
 #include "Symbolic/Variable.hpp"
 
 TEST(Variable, Expression) {
     EXPECT_TRUE(grad::sym::IsExpression<grad::sym::Variable<int>>::val);
+}
+
+TEST(Variable, Grad) {
+    EXPECT_TRUE(grad::sym::IsGrad<grad::sym::Variable<int>>::val);
 }
 
 TEST(Variable, Resolve) {
