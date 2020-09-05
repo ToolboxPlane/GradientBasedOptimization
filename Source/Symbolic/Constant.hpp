@@ -10,7 +10,7 @@
 #include "Expression.hpp"
 #include "Variable.hpp"
 
-namespace grad {
+namespace grad::sym {
     template <typename T, T val>
     class Constant {
         public:

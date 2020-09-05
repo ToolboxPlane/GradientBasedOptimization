@@ -8,7 +8,8 @@ if (GTest_FOUND)
     set(TEST_SOURCES
             Symbolic/Add.cpp
             Symbolic/Constant.cpp
-            Symbolic/Variable.cpp)
+            Symbolic/Variable.cpp
+            Util/EnableOr.cpp)
 
     include_directories(${CMAKE_SOURCE_DIR}/Source)
 

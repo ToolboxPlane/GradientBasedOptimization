@@ -9,7 +9,7 @@
 
 #include "Expression.hpp"
 
-namespace grad {
+namespace grad::sym {
     template <typename T>
     class Variable {
         public:

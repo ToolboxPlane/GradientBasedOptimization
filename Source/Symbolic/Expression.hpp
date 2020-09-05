@@ -7,11 +7,21 @@
 #ifndef GRADIENTOPTIMIZATION_EXPRESSION_HPP
 #define GRADIENTOPTIMIZATION_EXPRESSION_HPP
 
-namespace grad {
+namespace grad::sym {
     template<typename T>
     concept Expression = requires(const T t) {
         typename T::type;
         {t.resolve()} -> std::same_as<typename T::type>;
+    };
+
+    template <typename T>
+    struct IsExpression {
+        static constexpr auto val = false;
+    };
+
+    template <Expression expr>
+    struct IsExpression<expr> {
+        static constexpr auto val = true;
     };
 }
 
