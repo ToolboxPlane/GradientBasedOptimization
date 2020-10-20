@@ -10,8 +10,7 @@ if (GTest_FOUND)
             Symbolic/Constant.cpp
             Symbolic/Mul.cpp
             Symbolic/Operators.cpp
-            Symbolic/Variable.cpp
-            Util/EnableOr.cpp)
+            Symbolic/Variable.cpp)
 
     include_directories(${CMAKE_SOURCE_DIR}/Source)
 

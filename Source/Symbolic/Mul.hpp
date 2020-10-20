@@ -7,7 +7,6 @@
 #ifndef GRADIENTOPTIMIZATION_MUL_HPP
 #define GRADIENTOPTIMIZATION_MUL_HPP
 
-#include <Util/EnableOr.hpp>
 #include "Expression.hpp"
 #include "Add.hpp"
 
@@ -50,10 +49,6 @@ namespace grad::sym {
     template<Expression Lhs, Expression Rhs>
     auto Mul<Lhs, Rhs>::resolve() const -> type {
         return lhs.resolve() * rhs.resolve();
-    }
-
-    template<typename lhs, typename rhs>
-    auto gradient2(const Mul<lhs, rhs> &x, const Variable<typename lhs::type> &d) {
     }
 
     template <typename mul> requires (impl::IsMul<mul>::val)

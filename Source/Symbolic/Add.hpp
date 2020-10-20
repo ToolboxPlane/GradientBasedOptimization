@@ -7,8 +7,6 @@
 #ifndef GRADIENTOPTIMIZATION_ADD_HPP
 #define GRADIENTOPTIMIZATION_ADD_HPP
 
-#include "../Util/EnableOr.hpp"
-
 #include "Expression.hpp"
 
 #include "Variable.hpp"
