@@ -8,12 +8,17 @@
 #define GRADIENTOPTIMIZATION_OPERATORS_HPP
 
 #include "Add.hpp"
-#include "Constant.hpp"
+#include "Mul.hpp"
 
 namespace grad::sym {
     template<Expression Lhs, Expression Rhs>
     auto operator+(Lhs lhs, Rhs rhs) -> Add<Lhs, Rhs> {
         return Add<Lhs, Rhs>{lhs, rhs};
+    }
+
+    template<Expression Lhs, Expression Rhs>
+    auto operator*(Lhs lhs, Rhs rhs) -> Mul<Lhs, Rhs> {
+        return Mul<Lhs, Rhs>{lhs, rhs};
     }
 }
 
