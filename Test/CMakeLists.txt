@@ -8,6 +8,7 @@ if (GTest_FOUND)
     set(TEST_SOURCES
             Symbolic/Add.cpp
             Symbolic/Constant.cpp
+            Symbolic/Mul.cpp
             Symbolic/Operators.cpp
             Symbolic/Variable.cpp
             Util/EnableOr.cpp)

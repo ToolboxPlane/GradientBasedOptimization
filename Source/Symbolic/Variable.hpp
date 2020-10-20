@@ -14,16 +14,15 @@ namespace grad::sym {
     class Variable {
         public:
             using type = T;
-            using dtype = Variable<T>;
 
             explicit Variable(T val);
 
             auto resolve() const -> T;
 
-            auto grad(const Variable<T> &d) const -> dtype;
-
             void set(T t);
 
+            template <typename T_>
+            friend auto gradient(const Variable<T_> &x, const Variable<T_> &d);
         private:
             std::shared_ptr<T> val;
     };
@@ -41,9 +40,9 @@ namespace grad::sym {
         *(this->val) = t;
     }
 
-    template<typename T>
-    auto Variable<T>::grad(const Variable<T> &d) const -> Variable<T> {
-        return Variable<T>(this->val.get() == d.val.get()? 1 : 0);
+    template<typename T_>
+    auto gradient(const Variable<T_> &x, const Variable<T_> &d) {
+        return Variable<T_>(x.val.get() == d.val.get()? 1 : 0);
     }
 }
 

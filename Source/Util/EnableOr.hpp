@@ -19,7 +19,7 @@ namespace grad::util {
     };
 
     template <bool cond, typename TrueType, typename FalseType>
-    using EnableOrType = typename EnableOr<cond, TrueType, FalseType>::type;
+    using TernaryType = typename EnableOr<cond, TrueType, FalseType>::type;
 }
 
 #endif //GRADIENTOPTIMIZATION_ENABLE_OR_HPP

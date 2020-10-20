@@ -3,9 +3,9 @@
 #include "Util/EnableOr.hpp"
 
 TEST(EnableOr, TrueType) {
-    EXPECT_TRUE((std::same_as<grad::util::EnableOrType<true, int, double>, int>));
+    EXPECT_TRUE((std::same_as<grad::util::TernaryType<true, int, double>, int>));
 }
 
 TEST(EnableOr, FalseType) {
-    EXPECT_TRUE((std::same_as<grad::util::EnableOrType<false, int, double>, double>));
+    EXPECT_TRUE((std::same_as<grad::util::TernaryType<false, int, double>, double>));
 }

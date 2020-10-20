@@ -19,7 +19,8 @@ namespace grad::sym {
 
             auto resolve() const -> T;
 
-            auto grad(const Variable<T>&) const -> dtype;
+            template <typename T_, T_ val_>
+            friend auto gradient(const Constant<T_, val_>&, const Variable<T_>&);
     };
 
     template<typename T, T val>
@@ -27,10 +28,11 @@ namespace grad::sym {
         return val;
     }
 
-    template<typename T, T val>
-    auto Constant<T, val>::grad(const Variable<T>&) const -> dtype {
-        return Constant<T, 0>();
+    template<typename T_, T_ val_>
+    auto gradient(const Constant<T_, val_>&, const Variable<T_>&) {
+        return Constant<T_, 0>();
     }
+
 
 }
 

@@ -1,15 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "Symbolic/Grad.hpp"
-
 #include "Symbolic/Variable.hpp"
 
 TEST(Variable, Expression) {
     EXPECT_TRUE(grad::sym::IsExpression<grad::sym::Variable<int>>::val);
-}
-
-TEST(Variable, Grad) {
-    EXPECT_TRUE(grad::sym::IsGrad<grad::sym::Variable<int>>::val);
 }
 
 TEST(Variable, Resolve) {
@@ -25,11 +19,11 @@ TEST(Variable, Set) {
 
 TEST(Variable, GradEqual) {
     grad::sym::Variable<int> a{42};
-    EXPECT_EQ(a.grad(a).resolve(), 1);
+    EXPECT_EQ(grad::sym::gradient(a, a).resolve(), 1);
 }
 
 TEST(Variable, GradNEqual) {
     grad::sym::Variable<int> a{42};
     grad::sym::Variable<int> b{42};
-    EXPECT_EQ(a.grad(b).resolve(), 0);
+    EXPECT_EQ(grad::sym::gradient(a, b).resolve(), 0);
 }
