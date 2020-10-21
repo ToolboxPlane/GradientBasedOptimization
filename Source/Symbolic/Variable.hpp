@@ -7,6 +7,8 @@
 #ifndef GRADIENTOPTIMIZATION_VARIABLE_HPP
 #define GRADIENTOPTIMIZATION_VARIABLE_HPP
 
+#include <memory>
+
 #include "Expression.hpp"
 
 namespace grad::sym {

@@ -59,7 +59,6 @@ namespace grad::sym {
 
         return dtype{gradient(x.lhs, d), gradient(x.rhs, d)};
     }
-
 }
 
 #endif //GRADIENTOPTIMIZATION_ADD_HPP

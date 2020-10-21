@@ -11,26 +11,35 @@
 #include "Variable.hpp"
 
 namespace grad::sym {
-    template <typename T, T val>
+    template <typename T>
     class Constant {
         public:
             using type = T;
 
+            Constant(T val);
+
             auto resolve() const -> T;
 
-            template <typename T_, T_ val_>
-            friend auto gradient(const Constant<T_, val_>&, const Variable<T_>&);
+            template <typename T_>
+            friend auto gradient(const Constant<T_>&, const Variable<T_>&);
+
+        private:
+            T val;
     };
 
-    template<typename T, T val>
-    auto Constant<T, val>::resolve() const -> T {
+    template<typename T>
+    Constant<T>::Constant(T val) : val{val} {}
+
+    template<typename T>
+    auto Constant<T>::resolve() const -> T {
         return val;
     }
 
-    template<typename T_, T_ val_>
-    auto gradient(const Constant<T_, val_>&, const Variable<T_>&) {
-        return Constant<T_, 0>{};
+    template<typename T_>
+    auto gradient(const Constant<T_>&, const Variable<T_>&) {
+        return Constant<T_>{0};
     }
+
 
 
 }

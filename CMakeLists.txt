@@ -23,4 +23,5 @@ set(LIBS )
 #target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 add_subdirectory(Test)
+add_subdirectory(Examples)
 

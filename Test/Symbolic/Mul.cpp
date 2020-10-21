@@ -5,13 +5,13 @@
 #include "Symbolic/Mul.hpp"
 
 TEST(Mul, Expression) {
-    using Const = grad::sym::Constant<int, 0>;
+    using Const = grad::sym::Constant<int>;
     EXPECT_TRUE((grad::sym::IsExpression<grad::sym::Mul<Const, Const>>::val));
 }
 
 TEST(Mul, Resolve) {
-    grad::sym::Constant<int, 17> a;
-    grad::sym::Constant<int, 42> b;
+    grad::sym::Constant<int> a{17};
+    grad::sym::Constant<int> b{42};
     grad::sym::Mul<decltype(a), decltype(b)> mul{a, b};
     EXPECT_EQ(mul.resolve(), 17*42);
 }

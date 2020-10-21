@@ -62,6 +62,7 @@ namespace grad::sym {
         return dtype{lsum{x.lhs, gradient(x.rhs, d)},
                      rsum{gradient(x.lhs, d), x.rhs}};
     }
+
 }
 
 #endif //GRADIENTOPTIMIZATION_MUL_HPP

@@ -4,13 +4,13 @@
 #include "Symbolic/Constant.hpp"
 
 TEST(Add, Expression) {
-    using Const = grad::sym::Constant<int, 0>;
+    using Const = grad::sym::Constant<int>;
     EXPECT_TRUE((grad::sym::IsExpression<grad::sym::Add<Const, Const>>::val));
 }
 
 TEST(Add, Resolve) {
-    grad::sym::Constant<int, 17> a;
-    grad::sym::Constant<int, 42> b;
+    grad::sym::Constant<int> a{17};
+    grad::sym::Constant<int> b{42};
     grad::sym::Add<decltype(a), decltype(b)> add{a, b};
     EXPECT_EQ(add.resolve(), 17+42);
 }

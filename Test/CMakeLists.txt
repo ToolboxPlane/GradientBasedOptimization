@@ -8,9 +8,12 @@ if (GTest_FOUND)
     set(TEST_SOURCES
             Symbolic/Add.cpp
             Symbolic/Constant.cpp
+            Symbolic/Div.cpp
             Symbolic/Mul.cpp
             Symbolic/Operators.cpp
             Symbolic/Variable.cpp
+            Symbolic/Functions/Sin.cpp
+            Symbolic/Functions/Cos.cpp
             Optimization/SimpleGradientDescent.cpp)
 
     include_directories(${CMAKE_SOURCE_DIR}/Source)
