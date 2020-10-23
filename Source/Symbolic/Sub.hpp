@@ -32,6 +32,10 @@ namespace grad::sym {
 
             template <typename sub> requires (impl::IsSub<sub>::val)
             friend auto gradient(const sub &x, const Variable<typename sub::type> &d);
+
+            auto toString() const -> std::string {
+                return "(" + lhs.toString() + "-" + rhs.toString() + ")";
+            }
         private:
             Lhs lhs;
             Rhs rhs;

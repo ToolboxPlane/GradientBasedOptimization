@@ -16,13 +16,16 @@ namespace grad::sym {
         public:
             using type = T;
 
-            Constant(T val);
+            explicit Constant(T val);
 
             auto resolve() const -> T;
 
             template <typename T_>
             friend auto gradient(const Constant<T_>&, const Variable<T_>&);
 
+            auto toString() const -> std::string {
+                return std::to_string(val);
+            }
         private:
             T val;
     };

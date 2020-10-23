@@ -7,7 +7,7 @@ template<grad::sym::Expression X>
 auto predict(X x, const grad::sym::Variable<double> &u) {
     // Assuming dt=1
     grad::sym::Constant<double> T{0.5};
-    return x + grad::sym::Div{u - x, T};
+    return x + (u - x) / T;
 }
 
 template<grad::sym::Expression X, grad::sym::Expression Setpoint, grad::sym::Expression Input,
@@ -24,13 +24,13 @@ auto costFunction(X x, Setpoint setpoint, Input input, Inputs... inputs) {
 int main() {
     grad::sym::Variable<double> x{0};
 
-    grad::sym::Variable<double> u0{0};
-    grad::sym::Variable<double> u1{0};
-    grad::sym::Variable<double> u2{0};
+    grad::sym::Variable<double> u0{1};
+    grad::sym::Variable<double> u1{1};
+    grad::sym::Variable<double> u2{1};
 
-    grad::sym::Variable<double> setpoint{1};
+    grad::sym::Constant<double> setpoint{1};
 
-    auto loss = costFunction(x, setpoint, u0, u1, u2);
+    auto loss = costFunction(predict(x, u0), setpoint, u1, u2);
 
     auto diff0 = gradient(loss, u0);
     auto diff1 = gradient(loss, u1);
@@ -40,17 +40,15 @@ int main() {
 
     auto c = 0U;
 
-    while (loss.resolve() > 1) {
+    while (loss.resolve() > 0.01) {
         u0.set(u0.resolve() - diff0.resolve() * nu);
         u1.set(u1.resolve() - diff1.resolve() * nu);
         u1.set(u2.resolve() - diff2.resolve() * nu);
-        std::cout << u0.resolve() - diff0.resolve() * nu << std::endl;
-        std::cout << u1.resolve() - diff1.resolve() * nu << std::endl;
-        std::cout << u2.resolve() - diff2.resolve() * nu << std::endl;
         std::cout << c << ":\t" << loss.resolve() << std::endl;
         c += 1;
     }
 
+    std::cout << "{" << u0.resolve() << ", " << u1.resolve() << ", " << u2.resolve() << "}";
 
     return 0;
 }

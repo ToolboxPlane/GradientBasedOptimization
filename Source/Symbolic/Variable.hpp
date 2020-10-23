@@ -25,6 +25,10 @@ namespace grad::sym {
 
             template <typename T_>
             friend auto gradient(const Variable<T_> &x, const Variable<T_> &d);
+
+            auto toString() const -> std::string {
+                return "{" + std::to_string(*val) + "}";
+            }
         private:
             std::shared_ptr<T> val;
     };

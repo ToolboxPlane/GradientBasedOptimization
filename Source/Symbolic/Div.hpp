@@ -32,6 +32,10 @@ namespace grad::sym {
 
             template <typename div> requires (impl::IsDiv<div>::val)
             friend auto gradient(const div &x, const Variable<typename div::type> &d);
+
+            auto toString() const -> std::string {
+                return "(" + lhs.toString() + "+" + rhs.toString() + ")";
+            }
         private:
             Lhs lhs;
             Rhs rhs;
