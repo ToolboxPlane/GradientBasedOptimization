@@ -7,6 +7,8 @@
 #ifndef GRADIENTOPTIMIZATION_EXPRESSION_HPP
 #define GRADIENTOPTIMIZATION_EXPRESSION_HPP
 
+#include <concepts>
+
 namespace grad::sym {
     template<typename T>
     concept Expression = requires(const T t) {

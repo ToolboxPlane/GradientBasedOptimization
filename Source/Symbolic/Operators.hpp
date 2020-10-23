@@ -9,6 +9,8 @@
 
 #include "Add.hpp"
 #include "Mul.hpp"
+#include "Div.hpp"
+#include "Sub.hpp"
 
 namespace grad::sym {
     template<Expression Lhs, Expression Rhs>
@@ -19,6 +21,16 @@ namespace grad::sym {
     template<Expression Lhs, Expression Rhs>
     auto operator*(Lhs lhs, Rhs rhs) -> Mul<Lhs, Rhs> {
         return Mul<Lhs, Rhs>{lhs, rhs};
+    }
+
+    template<Expression Lhs, Expression Rhs>
+    auto operator/(Lhs lhs, Rhs rhs) -> Div<Lhs, Rhs> {
+        return Div<Lhs, Rhs>{lhs, rhs};
+    }
+
+    template<Expression Lhs, Expression Rhs>
+    auto operator-(Lhs lhs, Rhs rhs) -> Sub<Lhs, Rhs> {
+        return Sub<Lhs, Rhs>{lhs, rhs};
     }
 }
 

@@ -59,8 +59,8 @@ namespace grad::sym {
         using rsum = Mul<rgrad, decltype(x.lhs)>;
         using dtype = Add<lsum, rsum>;
 
-        return dtype{lsum{x.lhs, gradient(x.rhs, d)},
-                     rsum{gradient(x.lhs, d), x.rhs}};
+        return dtype{lsum{gradient(x.lhs, d), x.rhs},
+                     rsum{gradient(x.rhs, d), x.lhs}};
     }
 
 }

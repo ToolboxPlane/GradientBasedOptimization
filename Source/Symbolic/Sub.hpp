@@ -1,38 +1,37 @@
 /**
- * @file Add.hpp
+ * @file Sub.hpp
  * @author paul
  * @date 25.08.20
  * Description here TODO
  */
-#ifndef GRADIENTOPTIMIZATION_ADD_HPP
-#define GRADIENTOPTIMIZATION_ADD_HPP
+#ifndef GRADIENTOPTIMIZATION_SUB_HPP
+#define GRADIENTOPTIMIZATION_SUB_HPP
 
 #include "Expression.hpp"
 
 #include "Variable.hpp"
-#include "Sub.hpp"
 
 
 namespace grad::sym {
     namespace impl {
         template<typename T>
-        struct IsAdd {
+        struct IsSub {
             static constexpr auto val = false;
         };
     }
 
     template <Expression Lhs, Expression Rhs>
-    class Add {
+    class Sub {
             static_assert(std::is_same_v<typename Lhs::type, typename Rhs::type>, "Types do not match!");
         public:
             using type = typename Lhs::type;
 
-            Add(Lhs lhs, Rhs rhs);
+            Sub(Lhs lhs, Rhs rhs);
 
             auto resolve() const -> type;
 
-            template <typename add> requires (impl::IsAdd<add>::val)
-            friend auto gradient(const add &x, const Variable<typename add::type> &d);
+            template <typename sub> requires (impl::IsSub<sub>::val)
+            friend auto gradient(const sub &x, const Variable<typename sub::type> &d);
         private:
             Lhs lhs;
             Rhs rhs;
@@ -40,28 +39,27 @@ namespace grad::sym {
 
     namespace impl {
         template<Expression lhs, Expression rhs>
-        struct IsAdd<Add<lhs, rhs>> {
+        struct IsSub<Sub<lhs, rhs>> {
             static constexpr auto val = true;
         };
     }
 
     template<Expression Lhs, Expression Rhs>
-    Add<Lhs, Rhs>::Add(Lhs lhs, Rhs rhs) : lhs{lhs}, rhs{rhs} {}
+    Sub<Lhs, Rhs>::Sub(Lhs lhs, Rhs rhs) : lhs{lhs}, rhs{rhs} {}
 
     template<Expression Lhs, Expression Rhs>
-    auto Add<Lhs, Rhs>::resolve() const -> type {
-        return lhs.resolve() + rhs.resolve();
+    auto Sub<Lhs, Rhs>::resolve() const -> type {
+        return lhs.resolve() - rhs.resolve();
     }
 
-    template<typename add> requires (impl::IsAdd<add>::val)
-    auto gradient(const add &x, const Variable<typename add::type> &d) {
+    template<typename sub> requires (impl::IsSub<sub>::val)
+    auto gradient(const sub &x, const Variable<typename sub::type> &d) {
         using ldiff = decltype(gradient(x.lhs, d));
         using rdiff = decltype(gradient(x.rhs, d));
-        using dtype = Add<ldiff, rdiff>;
+        using dtype = Sub<ldiff, rdiff>;
 
         return dtype{gradient(x.lhs, d), gradient(x.rhs, d)};
     }
-
 }
 
-#endif //GRADIENTOPTIMIZATION_ADD_HPP
+#endif //GRADIENTOPTIMIZATION_SUB_HPP

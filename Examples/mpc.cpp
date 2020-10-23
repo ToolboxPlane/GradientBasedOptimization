@@ -1,28 +1,55 @@
-#include <tuple>
-
 #include <Symbolic/Operators.hpp>
-#include <Symbolic/Constant.hpp>
-#include <Symbolic/Functions/Tan.hpp>
-#include <utility>
+#include <iostream>
 
-template<grad::sym::Expression X_1, grad::sym::Expression X_2, grad::sym::Expression Psi>
-auto predict(X_1 x1, X_2 x2, Psi psi, grad::sym::Variable<double> steer, const grad::sym::Variable<double> &vel) {
+using namespace grad::sym;
+
+template<grad::sym::Expression X>
+auto predict(X x, const grad::sym::Variable<double> &u) {
     // Assuming dt=1
-    auto new_x_1 = x1 + vel * grad::sym::Cos(psi);
-    auto new_x_2 = x2 + vel * grad::sym::Sin(psi);
-    auto new_psi = psi + vel * grad::sym::Tan(std::move(steer));
-
-    return std::make_tuple(new_x_1, new_x_2, new_psi);
+    grad::sym::Constant<double> T{0.5};
+    return x + grad::sym::Div{u - x, T};
 }
 
-
+template<grad::sym::Expression X, grad::sym::Expression Setpoint, grad::sym::Expression Input,
+        grad::sym::Expression... Inputs>
+auto costFunction(X x, Setpoint setpoint, Input input, Inputs... inputs) {
+    auto error = (x - setpoint) * (x - setpoint);
+    if constexpr (sizeof...(inputs) == 0) {
+        return error; // additional weighting possible
+    } else {
+        return error + costFunction(predict(x, input), setpoint, inputs...);
+    }
+}
 
 int main() {
-    grad::sym::Variable<double> x_1{0};
-    grad::sym::Variable<double> x_2{0};
-    grad::sym::Variable<double> psi{0};
+    grad::sym::Variable<double> x{0};
 
+    grad::sym::Variable<double> u0{0};
+    grad::sym::Variable<double> u1{0};
+    grad::sym::Variable<double> u2{0};
 
+    grad::sym::Variable<double> setpoint{1};
+
+    auto loss = costFunction(x, setpoint, u0, u1, u2);
+
+    auto diff0 = gradient(loss, u0);
+    auto diff1 = gradient(loss, u1);
+    auto diff2 = gradient(loss, u2);
+
+    constexpr auto nu = 0.1;
+
+    auto c = 0U;
+
+    while (loss.resolve() > 1) {
+        u0.set(u0.resolve() - diff0.resolve() * nu);
+        u1.set(u1.resolve() - diff1.resolve() * nu);
+        u1.set(u2.resolve() - diff2.resolve() * nu);
+        std::cout << u0.resolve() - diff0.resolve() * nu << std::endl;
+        std::cout << u1.resolve() - diff1.resolve() * nu << std::endl;
+        std::cout << u2.resolve() - diff2.resolve() * nu << std::endl;
+        std::cout << c << ":\t" << loss.resolve() << std::endl;
+        c += 1;
+    }
 
 
     return 0;
