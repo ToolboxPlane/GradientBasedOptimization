@@ -23,9 +23,8 @@ namespace grad::sym {
 
     template <Expression Lhs, Expression Rhs>
     class Add {
-            static_assert(std::is_same_v<typename Lhs::type, typename Rhs::type>, "Types do not match!");
         public:
-            using type = typename Lhs::type;
+            using type = decltype(std::declval<Lhs>().resolve() + std::declval<Rhs>().resolve());
 
             Add(Lhs lhs, Rhs rhs);
 
@@ -34,7 +33,7 @@ namespace grad::sym {
             template <typename add> requires (impl::IsAdd<add>::val)
             friend auto gradient(const add &x, const Variable<typename add::type> &d);
 
-            auto toString() const -> std::string {
+            [[nodiscard]] auto toString() const -> std::string {
                 return "(" + lhs.toString() + "+" + rhs.toString() + ")";
             }
         private:

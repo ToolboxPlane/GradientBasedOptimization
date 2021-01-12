@@ -18,13 +18,12 @@ int main() {
         2, 2, 0, 0, 3
     };
 
-    auto error = [traj](auto x, auto t) {
-        Constant<double> target{traj[t.resolve()]};
-        return (x - target) * (x - target);
+    auto cost = [traj](auto x, auto u, auto t) {
+        return (x - traj[t]) * (x - traj[t]) + u*u*0.01;
     };
 
     auto term = [](auto err) {
-        return err < 0.001;
+        return err < 1;
     };
 
     auto optim = [](auto expr, auto x) {
@@ -33,12 +32,13 @@ int main() {
 
     Variable<double> x{-5};
 
-    auto mpc = grad::mpc::make_mpc<HORIZ>(predict, error, x);
+    auto mpc = grad::mpc::make_mpc<HORIZ, double>(predict, cost, x);
 
     auto err = mpc.update(term, optim);
 
     for (auto c = 0U; c < HORIZ; ++c) {
         auto u = mpc.get(c).resolve();
+
         std::cout << "t=" << c << "\tx=" << x.resolve() << "\tu=" << u << "\terr=" << err << std::endl;
 
         x.set(predict(x.resolve(), u, 0));

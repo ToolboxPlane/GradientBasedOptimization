@@ -22,9 +22,8 @@ namespace grad::sym {
 
     template <Expression Lhs, Expression Rhs>
     class Sub {
-            static_assert(std::is_same_v<typename Lhs::type, typename Rhs::type>, "Types do not match!");
         public:
-            using type = typename Lhs::type;
+            using type = decltype(std::declval<Lhs>().resolve() - std::declval<Rhs>().resolve());
 
             Sub(Lhs lhs, Rhs rhs);
 

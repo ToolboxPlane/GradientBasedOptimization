@@ -15,7 +15,7 @@ namespace grad::sym {
     concept Expression = requires(const T t) {
         typename T::type;
         {t.resolve()} -> std::same_as<typename T::type>;
-        {t.toString()} -> std::same_as<std::string>;
+        //{t.toString()} -> std::same_as<std::string>;
     };
 
     template <typename T>

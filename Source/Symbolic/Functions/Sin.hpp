@@ -8,9 +8,9 @@
 #define GRADIENTOPTIMIZATION_SIN_HPP
 
 #include <cmath>
-#include <Symbolic/Mul.hpp>
 
 #include "../Expression.hpp"
+#include "../Mul.hpp"
 #include "../Variable.hpp"
 #include "Cos.hpp"
 
