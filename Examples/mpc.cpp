@@ -13,8 +13,13 @@ int main() {
         return x + u;
     };
 
-    auto error = [](auto x, auto ) {
-        Constant<double> target{1};
+    std::array<double, HORIZ> traj{
+        1, 1, 1, 1, 1,
+        2, 2, 0, 0, 3
+    };
+
+    auto error = [traj](auto x, auto t) {
+        Constant<double> target{traj[t.resolve()]};
         return (x - target) * (x - target);
     };
 
@@ -30,13 +35,13 @@ int main() {
 
     auto mpc = grad::mpc::make_mpc<HORIZ>(predict, error, x);
 
-    auto u = mpc.get(0);
+    auto err = mpc.update(term, optim);
 
     for (auto c = 0U; c < HORIZ; ++c) {
-        auto err = mpc.update(term, optim);
-        std::cout << "t=" << c << "\tx=" << x.resolve() << "\tu=" << u.resolve() << "\terr=" << err << std::endl;
+        auto u = mpc.get(c).resolve();
+        std::cout << "t=" << c << "\tx=" << x.resolve() << "\tu=" << u << "\terr=" << err << std::endl;
 
-        x.set(predict(x.resolve(), u.resolve(), 0));
+        x.set(predict(x.resolve(), u, 0));
     }
 }
 
