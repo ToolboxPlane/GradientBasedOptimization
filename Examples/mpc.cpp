@@ -1,69 +1,42 @@
+#include <ModelPredictiveController/MPC.hpp>
 #include <Symbolic/Operators.hpp>
+#include <Optimization/SimpleGradientDescent.hpp>
+
 #include <iostream>
 
 using namespace grad::sym;
 
-template<grad::sym::Expression X>
-auto predict(X x, const grad::sym::Variable<double> &u) {
-    // Assuming dt=1
-    grad::sym::Constant<double> T{0.5};
-    grad::sym::Constant<double> mu{2};
-    return x + (mu * u - x) / T;
-}
-
-template<grad::sym::Expression X, grad::sym::Expression Setpoint>
-auto costFunction(X x, Setpoint setpoint) {
-    auto error = (x - setpoint) * (x - setpoint);
-    return error; // Additional weighting possible for final time step
-}
-
-template<grad::sym::Expression X, grad::sym::Expression Setpoint, grad::sym::Expression Input,
-        grad::sym::Expression... Inputs>
-auto costFunction(X x, Setpoint setpoint, Input input, Inputs... inputs) {
-    auto error = (x - setpoint) * (x - setpoint);
-    return error + costFunction(predict(x, input), setpoint, inputs...);
-}
+constexpr auto HORIZ = 10;
 
 int main() {
-    grad::sym::Constant<double> x{0};
+    auto predict = [](auto x, auto u, auto) {
+        return x + u;
+    };
 
-    grad::sym::Variable<double> u0{1};
-    grad::sym::Variable<double> u1{1};
-    grad::sym::Variable<double> u2{1};
+    auto error = [](auto x, auto ) {
+        Constant<double> target{1};
+        return (x - target) * (x - target);
+    };
 
-    grad::sym::Constant<double> setpoint{1};
+    auto term = [](auto err) {
+        return err < 0.001;
+    };
 
-    auto loss = costFunction(predict(x, u0), setpoint, u1, u2);
+    auto optim = [](auto expr, auto x) {
+        grad::opt::simple_gradient_descent::optimizeIterations(expr, x, 0.1, 1);
+    };
 
-    auto diff0 = gradient(loss, u0);
-    auto diff1 = gradient(loss, u1);
-    auto diff2 = gradient(loss, u2);
+    Variable<double> x{-5};
 
-    constexpr auto nu = 0.01;
+    auto mpc = grad::mpc::make_mpc<HORIZ>(predict, error, x);
 
-    auto c = 0U;
+    auto u = mpc.get(0);
 
-    while (loss.resolve() > 0.001) {
-        auto update0 = diff0.resolve() * nu;
-        auto update1 = diff1.resolve() * nu;
-        auto update2 = diff2.resolve() * nu;
-        u0.set(u0.resolve() - update0);
-        u1.set(u1.resolve() - update1);
-        u2.set(u2.resolve() - update2);
+    for (auto c = 0U; c < HORIZ; ++c) {
+        auto err = mpc.update(term, optim);
+        std::cout << "t=" << c << "\tx=" << x.resolve() << "\tu=" << u.resolve() << "\terr=" << err << std::endl;
 
-        auto x1 = predict(x, u0);
-        auto x2 = predict(x1, u1);
-        auto x3 = predict(x2, u2);
-
-        std::cout << c << ":\tLoss:" << loss.resolve() <<
-                  "\tInputs{" << u0.resolve() << ", " << u1.resolve() << ", " << u2.resolve() << "} -> " <<
-                  "States{" << x1.resolve() << ", " << x2.resolve() << ", " << x3.resolve() << "}\t" <<
-                  "Updates{" << update0 << ", " << update1 << ", " << update2 << "}" << std::endl;
-        c += 1;
+        x.set(predict(x.resolve(), u.resolve(), 0));
     }
-
-    std::cout << "{" << u0.resolve() << ", " << u1.resolve() << ", " << u2.resolve() << "}";
-
-    return 0;
 }
 

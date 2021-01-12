@@ -6,6 +6,7 @@ if (GTest_FOUND)
     include_directories(${GTEST_INCLUDE_DIR})
 
     set(TEST_SOURCES
+            ModelPredictiveController/MPC.cpp
             Symbolic/Add.cpp
             Symbolic/Constant.cpp
             Symbolic/Div.cpp
