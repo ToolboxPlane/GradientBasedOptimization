@@ -16,29 +16,33 @@
 
 namespace grad::mpc {
     namespace impl {
-        template<std::size_t N, sym::Expression Error, typename U>
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
         class MPC {
             public:
                 using T = typename Error::type;
 
-                MPC(Error error, std::vector<sym::Variable<T>> us);
+                MPC(Error error, std::vector<sym::Variable<T>> us, X x);
 
                 template<typename Term, typename OptimStep>
                 auto update(Term term, OptimStep optimStep);
 
-                auto get(std::size_t t) const -> U;
+                auto getU(std::size_t t = 0) const -> U;
+
+                auto getX() const -> X;
 
             private:
                 Error error;
                 std::vector<U> us;
+                X x;
         };
 
-        template<std::size_t N, sym::Expression Error, typename U>
-        MPC<N, Error, U>::MPC(Error error, std::vector<sym::Variable<T>> us) : error{error}, us{std::move(us)} {}
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
+        MPC<N, Error, U, X>::MPC(Error error, std::vector<sym::Variable<T>> us, X x) : error{error}, us{std::move(us)},
+            x{x} {}
 
-        template<std::size_t N, sym::Expression Error, typename U>
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
         template<typename Term, typename OptimStep>
-        auto MPC<N, Error, U>::update(Term term, OptimStep optimStep) {
+        auto MPC<N, Error, U, X>::update(Term term, OptimStep optimStep) {
             while (not term(error.resolve())) {
                 for (auto &u : us) {
                     optimStep(error, u);
@@ -47,9 +51,14 @@ namespace grad::mpc {
             return error.resolve();
         }
 
-        template<std::size_t N, sym::Expression Error, typename U>
-        auto MPC<N, Error, U>::get(std::size_t t) const -> U {
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
+        auto MPC<N, Error, U, X>::getU(std::size_t t) const -> U {
             return us.at(t);
+        }
+
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
+        auto MPC<N, Error, U, X>::getX() const -> X {
+            return x;
         }
 
         template<std::size_t t, std::size_t steps, typename F, typename J, sym::Expression X, typename U>
@@ -65,7 +74,6 @@ namespace grad::mpc {
         }
     }
 
-    // @TODO type of u
     template<std::size_t steps, typename U, typename F, typename J, sym::Expression X>
     auto make_mpc(F f, J j, X x) {
         using UVar = sym::Variable<U>;
@@ -80,7 +88,13 @@ namespace grad::mpc {
         }
         auto error = impl::getError<0, steps>(f, j, x, us);
 
-        return impl::MPC<steps, decltype(error), UVar>{error, us};
+        return impl::MPC<steps, decltype(error), UVar, X>{error, us, x};
+    }
+
+    template<std::size_t steps, typename U, typename X, typename F, typename J>
+    auto make_mpc(F f, J j) {
+        auto x = sym::Variable<X>{0};
+        return make_mpc<steps, U>(f, j, x);
     }
 }
 

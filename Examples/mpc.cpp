@@ -10,7 +10,7 @@ constexpr auto HORIZ = 10;
 
 int main() {
     auto predict = [](auto x, auto u, auto) {
-        return x + u;
+        return x + 0.5 * u;
     };
 
     std::array<double, HORIZ> traj{
@@ -18,30 +18,32 @@ int main() {
         2, 2, 0, 0, 3
     };
 
-    auto cost = [traj](auto x, auto u, auto t) {
-        return (x - traj[t]) * (x - traj[t]) + u*u*0.01;
+    auto cost = [traj](auto x, auto , auto t) {
+        return (x - traj[t]) * (x - traj[t]);
     };
 
     auto term = [](auto err) {
-        return err < 1;
+        return err < 0.0001;
     };
 
     auto optim = [](auto expr, auto x) {
         grad::opt::simple_gradient_descent::optimizeIterations(expr, x, 0.1, 1);
     };
 
-    Variable<double> x{-5};
+    auto mpc = grad::mpc::make_mpc<HORIZ, double, double>(predict, cost);
 
-    auto mpc = grad::mpc::make_mpc<HORIZ, double>(predict, cost, x);
+    mpc.getX().set(-3);
 
     auto err = mpc.update(term, optim);
 
+    auto x = mpc.getX().resolve();
+
     for (auto c = 0U; c < HORIZ; ++c) {
-        auto u = mpc.get(c).resolve();
+        auto u = mpc.getU(c).resolve();
 
-        std::cout << "t=" << c << "\tx=" << x.resolve() << "\tu=" << u << "\terr=" << err << std::endl;
+        std::cout << "t=" << c << "\tx=" << x << "\tu=" << u << "\terr=" << err << std::endl;
 
-        x.set(predict(x.resolve(), u, 0));
+        x = predict(x, u, c);
     }
 }
 
