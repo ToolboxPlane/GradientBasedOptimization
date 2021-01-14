@@ -7,41 +7,55 @@
 #ifndef GRADIENTOPTIMIZATION_SIMPLEGRADIENTDESCENT_HPP
 #define GRADIENTOPTIMIZATION_SIMPLEGRADIENTDESCENT_HPP
 
+#include <vector>
+
 #include "../Symbolic/Expression.hpp"
 #include "../Symbolic/Variable.hpp"
+#include "../Symbolic/Operators.hpp"
 
-namespace grad::opt::simple_gradient_descent {
-    template<sym::Expression Expr, typename TermFunc>
-    void optimize(Expr expr, sym::Variable<typename Expr::type> x, typename Expr::type nu,
-                         TermFunc termFunc) {
-        auto error = expr.resolve();
-        auto gradient = sym::gradient(expr, x);
+namespace grad::opt {
 
-        while (!termFunc(error)) {
-            auto update = gradient.resolve() * nu;
-            x.set(x.resolve() - update);
-            error = expr.resolve();
+    template<sym::Expression Expr, typename X, typename Nu = double>
+    class SimpleGradientDescent {
+        public:
+            using T = typename Expr::type;
+            using Grad = decltype(sym::gradient(std::declval<Expr>(), std::declval<sym::Variable<X>>()));
+            using Update = sym::Sub<sym::Variable<X>, sym::Mul<Grad, sym::Constant<Nu>>>;
+
+            SimpleGradientDescent(Expr expr, std::vector<sym::Variable<X>> xs, Nu nu);
+
+            void step();
+
+        private:
+            Expr expr;
+            std::vector<Update> updateExprs;
+            std::vector<sym::Variable<X>> xs;
+            double nu;
+
+    };
+
+
+    template<sym::Expression Expr, typename X, typename Nu>
+    SimpleGradientDescent<Expr, X, Nu>::SimpleGradientDescent(Expr expr, std::vector<sym::Variable<X>> xs, Nu nu)
+        : expr{expr}, xs{xs}, nu{nu} {
+        for (const auto &x : xs) {
+            updateExprs.emplace_back(x - sym::gradient(expr, x) * nu);
         }
     }
 
-    template<sym::Expression Expr>
-    void optimizeEpsilon(Expr expr, sym::Variable<typename Expr::type> x, typename Expr::type nu, 
-                          typename Expr::type epsilon) {
-        auto termFunc = [epsilon](typename Expr::type error){ return error < epsilon; };
-        optimize(expr, x, nu, termFunc);
+    template<sym::Expression Expr, typename X, typename Nu>
+    void SimpleGradientDescent<Expr, X, Nu>::step() {
+        std::vector<typename Update::type> updates;
+        for (const auto &updateExpr : updateExprs) {
+            updates.emplace_back(updateExpr.resolve());
+        }
+
+        for (auto c=0U; c<xs.size(); ++c) {
+            xs[c].set(updates[c]);
+        }
     }
 
-    template<sym::Expression Expr>
-    void optimizeIterations(Expr expr, sym::Variable<typename Expr::type> x, typename Expr::type nu,
-                            std::size_t iterations) {
-        iterations += 1; // The termination criteria is checked before the first optimization step
-        auto termFunc = [&iterations](typename Expr::type){ 
-            iterations -= 1;
-            return iterations == 0;
-        };
 
-        optimize(expr, x, nu, termFunc);
-    }
 }
 
 

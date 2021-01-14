@@ -10,7 +10,7 @@ constexpr auto HORIZ = 10;
 
 int main() {
     auto predict = [](auto x, auto u, auto) {
-        return x + 0.5 * u;
+        return x + u;
     };
 
     std::array<double, HORIZ> traj{
@@ -26,22 +26,20 @@ int main() {
         return err < 0.0001;
     };
 
-    auto optim = [](auto expr, auto x) {
-        grad::opt::simple_gradient_descent::optimizeIterations(expr, x, 0.1, 1);
-    };
-
     auto mpc = grad::mpc::make_mpc<HORIZ, double, double>(predict, cost);
 
     mpc.getX().set(-3);
 
-    auto err = mpc.update(term, optim);
+    using opt = grad::opt::SimpleGradientDescent<decltype(mpc)::E, double, double>;
+
+    mpc.update<decltype(term), opt, double>(term, 0.01);
 
     auto x = mpc.getX().resolve();
 
     for (auto c = 0U; c < HORIZ; ++c) {
         auto u = mpc.getU(c).resolve();
 
-        std::cout << "t=" << c << "\tx=" << x << "\tu=" << u << "\terr=" << err << std::endl;
+        std::cout << "t=" << c << "\tx=" << x << "\tu=" << u << std::endl;
 
         x = predict(x, u, c);
     }

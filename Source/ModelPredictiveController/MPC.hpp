@@ -9,10 +9,12 @@
 
 #include <utility>
 #include <vector>
+#include <iostream>
 
 #include "../Symbolic/Expression.hpp"
+#include "../Optimization/Optimizer.hpp"
+
 #include "../Symbolic/Variable.hpp"
-#include "../Symbolic/Constant.hpp"
 
 namespace grad::mpc {
     namespace impl {
@@ -20,11 +22,12 @@ namespace grad::mpc {
         class MPC {
             public:
                 using T = typename Error::type;
+                using E = Error;
 
                 MPC(Error error, std::vector<sym::Variable<T>> us, X x);
 
-                template<typename Term, typename OptimStep>
-                auto update(Term term, OptimStep optimStep);
+                template<typename Term, opt::Optimizer Optim, typename...Args>
+                auto update(Term term, Args&&... args);
 
                 auto getU(std::size_t t = 0) const -> U;
 
@@ -38,15 +41,15 @@ namespace grad::mpc {
 
         template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
         MPC<N, Error, U, X>::MPC(Error error, std::vector<sym::Variable<T>> us, X x) : error{error}, us{std::move(us)},
-            x{x} {}
+                                                                                       x{x} {}
 
         template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
-        template<typename Term, typename OptimStep>
-        auto MPC<N, Error, U, X>::update(Term term, OptimStep optimStep) {
+        template<typename Term, opt::Optimizer Optim, typename... Args>
+        auto MPC<N, Error, U, X>::update(Term term, Args&&... args) {
+            Optim optim{error, us, std::forward<Args>(args)...};
+
             while (not term(error.resolve())) {
-                for (auto &u : us) {
-                    optimStep(error, u);
-                }
+                optim.step();
             }
             return error.resolve();
         }

@@ -30,7 +30,7 @@ namespace grad::sym {
             template <typename mul> requires (impl::IsMul<mul>::val)
             friend auto gradient(const mul &x, const Variable<typename mul::type> &d);
 
-            auto toString() const -> std::string {
+            [[nodiscard]] auto toString() const -> std::string {
                 return lhs.toString() + "*" + rhs.toString();
             }
         private:
