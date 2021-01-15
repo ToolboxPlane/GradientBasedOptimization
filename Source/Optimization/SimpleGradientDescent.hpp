@@ -19,24 +19,25 @@ namespace grad::opt {
     class SimpleGradientDescent {
         public:
             using T = typename Expr::type;
-            using Grad = decltype(sym::gradient(std::declval<Expr>(), std::declval<sym::Variable<X>>()));
-            using Update = sym::Sub<sym::Variable<X>, sym::Mul<Grad, sym::Constant<Nu>>>;
+            using XVar = sym::Variable<X>;
+            using Grad = decltype(sym::gradient(std::declval<Expr>(), std::declval<XVar>()));
+            using Update = sym::Sub<XVar, sym::Mul<Grad, sym::Constant<Nu>>>;
 
-            SimpleGradientDescent(Expr expr, std::vector<sym::Variable<X>> xs, Nu nu);
+            SimpleGradientDescent(Expr expr, std::vector<XVar> xs, Nu nu);
 
             void step();
 
         private:
             Expr expr;
             std::vector<Update> updateExprs;
-            std::vector<sym::Variable<X>> xs;
+            std::vector<XVar> xs;
             double nu;
 
     };
 
 
     template<sym::Expression Expr, typename X, typename Nu>
-    SimpleGradientDescent<Expr, X, Nu>::SimpleGradientDescent(Expr expr, std::vector<sym::Variable<X>> xs, Nu nu)
+    SimpleGradientDescent<Expr, X, Nu>::SimpleGradientDescent(Expr expr, std::vector<XVar> xs, Nu nu)
         : expr{expr}, xs{xs}, nu{nu} {
         for (const auto &x : xs) {
             updateExprs.emplace_back(x - sym::gradient(expr, x) * nu);
@@ -55,6 +56,12 @@ namespace grad::opt {
         }
     }
 
+    struct {
+        template<sym::Expression Expr, typename X, typename Nu>
+        auto operator()(Expr expr, std::vector<sym::Variable<X>> x, Nu nu) {
+            return SimpleGradientDescent<Expr, X, Nu>{expr, x, nu};
+        }
+    } make_sgd;
 
 }
 

@@ -18,54 +18,54 @@
 
 namespace grad::mpc {
     namespace impl {
-        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X,
+                opt::Optimizer Opt>
         class MPC {
             public:
                 using T = typename Error::type;
-                using E = Error;
+                using UVar = sym::Variable<U>;
 
-                MPC(Error error, std::vector<sym::Variable<T>> us, X x);
+                MPC(Error error, std::vector<UVar> us, X x, Opt opt);
 
-                template<typename Term, opt::Optimizer Optim, typename...Args>
-                auto update(Term term, Args&&... args);
+                template<typename Term>
+                auto update(Term term);
 
-                auto getU(std::size_t t = 0) const -> U;
+                auto getU(std::size_t t = 0) const -> UVar;
 
                 auto getX() const -> X;
 
             private:
                 Error error;
-                std::vector<U> us;
+                std::vector<UVar> us;
                 X x;
+                Opt opt;
         };
 
-        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
-        MPC<N, Error, U, X>::MPC(Error error, std::vector<sym::Variable<T>> us, X x) : error{error}, us{std::move(us)},
-                                                                                       x{x} {}
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
+        MPC<N, Error, U, X, Opt>::MPC(Error error, std::vector<UVar> us, X x, Opt opt) : error{error}, us{std::move(us)},
+                                                                                       x{x}, opt{opt} {}
 
-        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
-        template<typename Term, opt::Optimizer Optim, typename... Args>
-        auto MPC<N, Error, U, X>::update(Term term, Args&&... args) {
-            Optim optim{error, us, std::forward<Args>(args)...};
-
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
+        template<typename Term>
+        auto MPC<N, Error, U, X, Opt>::update(Term term) {
             while (not term(error.resolve())) {
-                optim.step();
+                opt.step();
             }
             return error.resolve();
         }
 
-        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
-        auto MPC<N, Error, U, X>::getU(std::size_t t) const -> U {
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
+        auto MPC<N, Error, U, X, Opt>::getU(std::size_t t) const -> UVar {
             return us.at(t);
         }
 
-        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X>
-        auto MPC<N, Error, U, X>::getX() const -> X {
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
+        auto MPC<N, Error, U, X, Opt>::getX() const -> X {
             return x;
         }
 
-        template<std::size_t t, std::size_t steps, typename F, typename J, sym::Expression X, typename U>
-        auto getError(F f, J j, X x, std::vector<U> us) {
+        template<std::size_t t, std::size_t steps, typename F, typename J, sym::Expression X, typename UVar>
+        auto getError(F f, J j, X x, std::vector<UVar> us) {
             auto u = us.at(t);
             auto nextX = f(x, u, t);
 
@@ -77,8 +77,9 @@ namespace grad::mpc {
         }
     }
 
-    template<std::size_t steps, typename U, typename F, typename J, sym::Expression X>
-    auto make_mpc(F f, J j, X x) {
+    template<std::size_t steps, typename U, typename F, typename J, sym::Expression X,
+            typename MakeOptim, typename... OptimArgs>
+    auto make_mpc(F f, J j, X x, MakeOptim makeOptim, OptimArgs&&... optimArgs) {
         using UVar = sym::Variable<U>;
         static_assert(std::is_invocable_v<F, X, UVar, std::size_t>,
                       "f must be of the form f(x, u, t)");
@@ -91,13 +92,16 @@ namespace grad::mpc {
         }
         auto error = impl::getError<0, steps>(f, j, x, us);
 
-        return impl::MPC<steps, decltype(error), UVar, X>{error, us, x};
+        auto optim = makeOptim(error, us, std::forward<OptimArgs>(optimArgs)...);
+
+        return impl::MPC<steps, decltype(error), U, X, decltype(optim)>{error, us, x, optim};
     }
 
-    template<std::size_t steps, typename U, typename X, typename F, typename J>
-    auto make_mpc(F f, J j) {
+    template<std::size_t steps, typename U, typename X, typename F, typename J,
+            typename MakeOptim, typename... OptimArgs>
+    auto make_mpc(F f, J j, MakeOptim makeOptim, OptimArgs&&... optimArgs) {
         auto x = sym::Variable<X>{0};
-        return make_mpc<steps, U>(f, j, x);
+        return make_mpc<steps, U>(f, j, x, makeOptim, std::forward<OptimArgs>(optimArgs)...);
     }
 }
 

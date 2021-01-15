@@ -26,13 +26,11 @@ int main() {
         return err < 0.0001;
     };
 
-    auto mpc = grad::mpc::make_mpc<HORIZ, double, double>(predict, cost);
+    auto mpc = grad::mpc::make_mpc<HORIZ, double, double>(predict, cost, grad::opt::make_sgd, 0.01);
 
     mpc.getX().set(-3);
 
-    using opt = grad::opt::SimpleGradientDescent<decltype(mpc)::E, double, double>;
-
-    mpc.update<decltype(term), opt, double>(term, 0.01);
+    mpc.update(term);
 
     auto x = mpc.getX().resolve();
 
