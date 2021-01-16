@@ -2,13 +2,12 @@
 
 #include "Symbolic/Operators.hpp"
 
-#include "Optimization/SimpleGradientDescent.hpp"
+#include "Optimization/Momentum.hpp"
 
-
-TEST(SimpleGradientDescent, SquareIterationsSingleStep) {
+TEST(Momentum, SquareIterationsSingleStep) {
     auto x = grad::sym::Variable<double>{10};
     auto y = x * x;
-    auto opt = grad::opt::make_sgd(y, std::vector{x}, 0.17);
+    auto opt = grad::opt::make_momentum(y, std::vector{x}, 0.17, 0.37);
     opt.step();
     EXPECT_DOUBLE_EQ(x.resolve(), 10 - 2 * 10 * 0.17);
 }

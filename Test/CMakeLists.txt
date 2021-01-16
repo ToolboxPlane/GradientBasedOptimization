@@ -15,7 +15,8 @@ if (GTest_FOUND)
             Symbolic/Variable.cpp
             Symbolic/Functions/Sin.cpp
             Symbolic/Functions/Cos.cpp
-            Optimization/SimpleGradientDescent.cpp)
+            Optimization/SimpleGradientDescent.cpp
+            Optimization/Momentum.cpp)
 
     include_directories(${CMAKE_SOURCE_DIR}/Source)
 

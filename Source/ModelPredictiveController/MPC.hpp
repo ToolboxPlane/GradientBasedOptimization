@@ -28,7 +28,7 @@ namespace grad::mpc {
                 MPC(Error error, std::vector<UVar> us, X x, Opt opt);
 
                 template<typename Term>
-                auto update(Term term);
+                auto optimize(Term term);
 
                 auto getU(std::size_t t = 0) const -> UVar;
 
@@ -47,7 +47,7 @@ namespace grad::mpc {
 
         template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
         template<typename Term>
-        auto MPC<N, Error, U, X, Opt>::update(Term term) {
+        auto MPC<N, Error, U, X, Opt>::optimize(Term term) {
             while (not term(error.resolve())) {
                 opt.step();
             }

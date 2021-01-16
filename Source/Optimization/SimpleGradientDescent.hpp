@@ -14,7 +14,6 @@
 #include "../Symbolic/Operators.hpp"
 
 namespace grad::opt {
-
     template<sym::Expression Expr, typename X, typename Nu = double>
     class SimpleGradientDescent {
         public:
@@ -28,17 +27,14 @@ namespace grad::opt {
             void step();
 
         private:
-            Expr expr;
             std::vector<Update> updateExprs;
             std::vector<XVar> xs;
-            double nu;
 
     };
 
 
     template<sym::Expression Expr, typename X, typename Nu>
-    SimpleGradientDescent<Expr, X, Nu>::SimpleGradientDescent(Expr expr, std::vector<XVar> xs, Nu nu)
-        : expr{expr}, xs{xs}, nu{nu} {
+    SimpleGradientDescent<Expr, X, Nu>::SimpleGradientDescent(Expr expr, std::vector<XVar> xs, Nu nu) : xs{xs} {
         for (const auto &x : xs) {
             updateExprs.emplace_back(x - sym::gradient(expr, x) * nu);
         }

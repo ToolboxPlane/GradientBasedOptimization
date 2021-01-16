@@ -1,36 +1,32 @@
 #include <ModelPredictiveController/MPC.hpp>
-#include <Symbolic/Operators.hpp>
-#include <Optimization/SimpleGradientDescent.hpp>
+#include <Optimization/Momentum.hpp>
 
 #include <iostream>
 
-using namespace grad::sym;
-
-constexpr auto HORIZ = 10;
+constexpr auto HORIZ = 5;
 
 int main() {
     auto predict = [](auto x, auto u, auto) {
-        return x + u;
+        return x * 2.0 - u;
     };
 
-    std::array<double, HORIZ> traj{
-        1, 1, 1, 1, 1,
-        2, 2, 0, 0, 3
+    std::array<double, HORIZ> trajectory{
+        1, 1, 5, 1, 1,
     };
 
-    auto cost = [traj](auto x, auto , auto t) {
-        return (x - traj[t]) * (x - traj[t]);
+    auto cost = [trajectory](auto x, auto , auto t) {
+        return (x - trajectory[t]) * (x - trajectory[t]);
     };
 
     auto term = [](auto err) {
-        return err < 0.0001;
+        return err < 0.1;
     };
 
-    auto mpc = grad::mpc::make_mpc<HORIZ, double, double>(predict, cost, grad::opt::make_sgd, 0.01);
+    auto mpc = grad::mpc::make_mpc<HORIZ, double, double>(predict, cost, grad::opt::make_momentum, 0.001, 0.1);
 
     mpc.getX().set(-3);
 
-    mpc.update(term);
+    mpc.optimize(term);
 
     auto x = mpc.getX().resolve();
 
