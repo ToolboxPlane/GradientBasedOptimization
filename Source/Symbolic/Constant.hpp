@@ -11,6 +11,8 @@
 #include "Variable.hpp"
 
 namespace grad::sym {
+    template<typename> class Variable;
+
     template <typename T>
     class Constant {
         public:
@@ -25,6 +27,8 @@ namespace grad::sym {
 
             template <typename T_>
             friend auto toString(const Constant<T_> &x) -> std::string;
+
+            static constexpr auto isConstant() -> bool;
         private:
             T val;
     };
@@ -45,6 +49,11 @@ namespace grad::sym {
     template <typename T_>
     auto toString(const Constant<T_> &x) -> std::string {
         return std::to_string(x.val);
+    }
+
+    template<typename T>
+    constexpr auto Constant<T>::isConstant() -> bool {
+        return true;
     }
 
 }

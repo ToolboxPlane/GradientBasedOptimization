@@ -27,6 +27,8 @@ namespace grad::sym {
 
             template<Expression Expr_>
             friend auto toString(const Tan<Expr_> &x) -> std::string;
+
+            static constexpr auto isConstant() -> bool;
         private:
             Expr expr;
     };
@@ -47,6 +49,11 @@ namespace grad::sym {
     template<typename Expr_>
     auto toString(const Tan<Expr_> &x) -> std::string {
         return "tan(" + toString(x.expr) + ")";
+    }
+
+    template<Expression Expr>
+    constexpr auto Tan<Expr>::isConstant() -> bool {
+        return Expr::isConstant();
     }
 }
 

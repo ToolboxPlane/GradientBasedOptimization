@@ -24,3 +24,7 @@ TEST(Constant, GradResolve) {
 
     EXPECT_EQ(grad::sym::gradient(c, grad::sym::Variable<int>{0}).resolve(), 0);
 }
+
+TEST(Constant, IsConstant) {
+    EXPECT_TRUE(grad::sym::Constant<int>::isConstant());
+}

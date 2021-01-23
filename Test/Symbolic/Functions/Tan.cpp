@@ -21,3 +21,13 @@ TEST(Tan, Gradient) {
     grad::sym::Tan<decltype(x)> y{x};
     EXPECT_DOUBLE_EQ(grad::sym::gradient(y, x).resolve(), 1);
 }
+
+TEST(Tan, IsConstantC) {
+    using C = grad::sym::Constant<int>;
+    EXPECT_TRUE((grad::sym::Tan<C>::isConstant()));
+}
+
+TEST(Tan, IsConstantV) {
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Tan<V>::isConstant()));
+}

@@ -21,3 +21,13 @@ TEST(Cos, Gradient) {
     grad::sym::Cos<decltype(x)> y{x};
     EXPECT_DOUBLE_EQ(grad::sym::gradient(y, x).resolve(), 0);
 }
+
+TEST(Cos, IsConstantC) {
+    using C = grad::sym::Constant<int>;
+    EXPECT_TRUE((grad::sym::Cos<C>::isConstant()));
+}
+
+TEST(Cos, IsConstantV) {
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Cos<V>::isConstant()));
+}

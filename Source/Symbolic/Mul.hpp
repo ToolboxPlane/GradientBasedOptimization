@@ -32,6 +32,8 @@ namespace grad::sym {
 
             template <typename mul> requires (impl::IsMul<mul>::val)
             friend auto toString(const mul &x) -> std::string;
+
+            static constexpr auto isConstant() -> bool;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -67,6 +69,11 @@ namespace grad::sym {
     template <typename mul> requires (impl::IsMul<mul>::val)
     auto toString(const mul &x) -> std::string {
         return x.lhs.toString() + "*" + x.rhs.toString();
+    }
+
+    template<Expression Lhs, Expression Rhs>
+    constexpr auto Mul<Lhs, Rhs>::isConstant() -> bool {
+        return Lhs::isConstant() and Rhs::isConstant();
     }
 
 }

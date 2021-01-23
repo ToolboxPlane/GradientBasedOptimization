@@ -27,3 +27,7 @@ TEST(Variable, GradNEqual) {
     grad::sym::Variable<int> b{42};
     EXPECT_EQ(grad::sym::gradient(a, b).resolve(), 0);
 }
+
+TEST(Variable, IsConstant) {
+    EXPECT_FALSE(grad::sym::Variable<int>::isConstant());
+}

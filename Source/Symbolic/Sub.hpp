@@ -34,6 +34,8 @@ namespace grad::sym {
 
             template <typename sub> requires (impl::IsSub<sub>::val)
             friend auto toString(const sub &x) -> std::string;
+
+            static constexpr auto isConstant() -> bool;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -66,6 +68,11 @@ namespace grad::sym {
     template <typename sub> requires (impl::IsSub<sub>::val)
     auto toString(const sub &x) -> std::string {
         return "(" + x.lhs.toString() + "-" + x.rhs.toString() + ")";
+    }
+
+    template<Expression Lhs, Expression Rhs>
+    constexpr auto Sub<Lhs, Rhs>::isConstant() -> bool {
+        return Lhs::isConstant() and Rhs::isConstant();
     }
 }
 

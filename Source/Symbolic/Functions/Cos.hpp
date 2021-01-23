@@ -35,6 +35,7 @@ namespace grad::sym {
             template<Expression Expr_>
             friend auto toString(const Cos<Expr_> &x) -> std::string;
 
+            static constexpr auto isConstant() -> bool;
         private:
             Expr expr;
     };
@@ -55,6 +56,11 @@ namespace grad::sym {
     template<Expression Expr_>
     auto toString(const Cos<Expr_> &x) -> std::string {
         return "cos(" + toString(x.expr) + ")";
+    }
+
+    template<Expression Expr>
+    constexpr auto Cos<Expr>::isConstant() -> bool {
+        return Expr::isConstant();
     }
 }
 

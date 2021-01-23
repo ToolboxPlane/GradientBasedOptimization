@@ -44,3 +44,25 @@ TEST(Mul, GradBoth) {
     EXPECT_EQ(grad::sym::gradient(mul, a).resolve(), 2*17);
 }
 
+
+TEST(Mul, IsConstantCC) {
+    using C = grad::sym::Constant<int>;
+    EXPECT_TRUE((grad::sym::Mul<C, C>::isConstant()));
+}
+
+TEST(Mul, IsConstantCV) {
+    using C = grad::sym::Constant<int>;
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Mul<C, V>::isConstant()));
+}
+
+TEST(Mul, IsConstantVC) {
+    using C = grad::sym::Constant<int>;
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Mul<V, C>::isConstant()));
+}
+
+TEST(Mul, IsConstantVV) {
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Mul<V, V>::isConstant()));
+}

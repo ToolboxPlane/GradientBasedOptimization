@@ -35,6 +35,8 @@ namespace grad::sym {
 
             template <typename add> requires(impl::IsAdd<add>::val)
             friend auto toString(const add &x) -> std::string;
+
+            static constexpr auto isConstant() -> bool;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -68,6 +70,11 @@ namespace grad::sym {
     auto toString(const add &x) {
         return "(" + x.toString() + "+" + x.toString() + ")";
     }
+    template<Expression Lhs, Expression Rhs>
+    constexpr auto Add<Lhs, Rhs>::isConstant() -> bool {
+        return Lhs::isConstant() and Rhs::isConstant();
+    }
+
 
 }
 

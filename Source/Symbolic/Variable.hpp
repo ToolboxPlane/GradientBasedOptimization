@@ -10,8 +10,12 @@
 #include <memory>
 
 #include "Expression.hpp"
+#include "Constant.hpp"
 
 namespace grad::sym {
+    template<typename T>
+    class Constant;
+
     template <typename T>
     class Variable {
         public:
@@ -28,6 +32,8 @@ namespace grad::sym {
 
             template <typename T_>
             friend auto toString(const Variable<T_> &x) -> std::string;
+
+            static constexpr auto isConstant() -> bool;
         private:
             std::shared_ptr<T> val;
     };
@@ -47,12 +53,17 @@ namespace grad::sym {
 
     template<typename T_>
     auto gradient(const Variable<T_> &x, const Variable<T_> &d) {
-        return Variable<T_>(x.val.get() == d.val.get()? 1 : 0);
+        return Constant<T_>(x.val.get() == d.val.get() ? 1 : 0);
     }
 
     template <typename T_>
     auto toString(const Variable<T_> &x) -> std::string {
         return "{" + std::to_string(x->val) + "}";
+    }
+
+    template<typename T>
+    constexpr auto Variable<T>::isConstant() -> bool {
+        return false;
     }
 }
 

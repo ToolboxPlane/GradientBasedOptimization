@@ -33,6 +33,8 @@ namespace grad::sym {
 
             template <typename div> requires (impl::IsDiv<div>::val)
             friend auto toString(const div &x) -> std::string;
+
+            static constexpr auto isConstant() -> bool;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -65,6 +67,11 @@ namespace grad::sym {
     template <typename div> requires (impl::IsDiv<div>::val)
     auto toString(const div &x) -> std::string {
         return "(" + x.lhs.toString() + "/" + x.rhs.toString() + ")";
+    }
+
+    template<Expression Lhs, Expression Rhs>
+    constexpr auto Div<Lhs, Rhs>::isConstant() -> bool {
+        return Lhs::isConstant() and Rhs::isConstant();
     }
 }
 

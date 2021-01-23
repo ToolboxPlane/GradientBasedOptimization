@@ -42,3 +42,25 @@ TEST(Sub, GradBoth) {
     grad::sym::Sub<decltype(a), decltype(a)> sub{a, a};
     EXPECT_EQ(grad::sym::gradient(sub, a).resolve(), 0);
 }
+
+TEST(Sub, IsConstantCC) {
+    using C = grad::sym::Constant<int>;
+    EXPECT_TRUE((grad::sym::Sub<C, C>::isConstant()));
+}
+
+TEST(Sub, IsConstantCV) {
+    using C = grad::sym::Constant<int>;
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Sub<C, V>::isConstant()));
+}
+
+TEST(Sub, IsConstantVC) {
+    using C = grad::sym::Constant<int>;
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Sub<V, C>::isConstant()));
+}
+
+TEST(Sub, IsConstantVV) {
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Sub<V, V>::isConstant()));
+}

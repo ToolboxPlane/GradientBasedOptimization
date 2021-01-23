@@ -21,3 +21,13 @@ TEST(Sin, Gradient) {
     grad::sym::Sin<decltype(x)> y{x};
     EXPECT_DOUBLE_EQ(grad::sym::gradient(y, x).resolve(), 1);
 }
+
+TEST(Sin, IsConstantC) {
+    using C = grad::sym::Constant<int>;
+    EXPECT_TRUE((grad::sym::Sin<C>::isConstant()));
+}
+
+TEST(Sin, IsConstantV) {
+    using V = grad::sym::Variable<int>;
+    EXPECT_FALSE((grad::sym::Sin<V>::isConstant()));
+}
