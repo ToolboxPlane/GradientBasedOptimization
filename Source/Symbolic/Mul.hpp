@@ -30,9 +30,8 @@ namespace grad::sym {
             template <typename mul> requires (impl::IsMul<mul>::val)
             friend auto gradient(const mul &x, const Variable<typename mul::type> &d);
 
-            [[nodiscard]] auto toString() const -> std::string {
-                return lhs.toString() + "*" + rhs.toString();
-            }
+            template <typename mul> requires (impl::IsMul<mul>::val)
+            friend auto toString(const mul &x) -> std::string;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -63,6 +62,11 @@ namespace grad::sym {
 
         return dtype{lsum{gradient(x.lhs, d), x.rhs},
                      rsum{gradient(x.rhs, d), x.lhs}};
+    }
+
+    template <typename mul> requires (impl::IsMul<mul>::val)
+    auto toString(const mul &x) -> std::string {
+        return x.lhs.toString() + "*" + x.rhs.toString();
     }
 
 }

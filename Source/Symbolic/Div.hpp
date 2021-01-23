@@ -31,9 +31,8 @@ namespace grad::sym {
             template <typename div> requires (impl::IsDiv<div>::val)
             friend auto gradient(const div &x, const Variable<typename div::type> &d);
 
-            auto toString() const -> std::string {
-                return "(" + lhs.toString() + "+" + rhs.toString() + ")";
-            }
+            template <typename div> requires (impl::IsDiv<div>::val)
+            friend auto toString(const div &x) -> std::string;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -61,6 +60,11 @@ namespace grad::sym {
                 Add{Mul{gradient(x.lhs, d), x.rhs}, Mul{Mul{x.lhs, gradient(x.rhs, d)}, neg}} ,
                     Mul{x.rhs, x.rhs}
             };
+    }
+
+    template <typename div> requires (impl::IsDiv<div>::val)
+    auto toString(const div &x) -> std::string {
+        return "(" + x.lhs.toString() + "/" + x.rhs.toString() + ")";
     }
 }
 

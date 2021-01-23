@@ -30,6 +30,8 @@ namespace grad::sym {
             template<Expression Expr_>
             friend auto gradient(const Sin<Expr_> &x, const Variable<typename Expr_::type> &d);
 
+            template<Expression Expr_>
+            friend auto toString(const Sin<Expr_> &x) -> std::string;
         private:
             Expr expr;
     };
@@ -45,6 +47,11 @@ namespace grad::sym {
     template<Expression Expr_>
     auto gradient(const Sin<Expr_> &x, const Variable<typename Expr_::type> &d) {
         return Mul{Cos{x.expr}, gradient(x.expr, d)};
+    }
+
+    template<Expression Expr_>
+    auto toString(const Sin<Expr_> &x) -> std::string {
+        return "cos(" + toString(x.expr) + ")";
     }
 }
 

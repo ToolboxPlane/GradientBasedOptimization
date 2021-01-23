@@ -33,9 +33,8 @@ namespace grad::sym {
             template <typename add> requires (impl::IsAdd<add>::val)
             friend auto gradient(const add &x, const Variable<typename add::type> &d);
 
-            [[nodiscard]] auto toString() const -> std::string {
-                return "(" + lhs.toString() + "+" + rhs.toString() + ")";
-            }
+            template <typename add> requires(impl::IsAdd<add>::val)
+            friend auto toString(const add &x) -> std::string;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -63,6 +62,11 @@ namespace grad::sym {
         using dtype = Add<ldiff, rdiff>;
 
         return dtype{gradient(x.lhs, d), gradient(x.rhs, d)};
+    }
+
+    template<typename add> requires (impl::IsAdd<add>::val)
+    auto toString(const add &x) {
+        return "(" + x.toString() + "+" + x.toString() + ")";
     }
 
 }

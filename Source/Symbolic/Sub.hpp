@@ -32,9 +32,8 @@ namespace grad::sym {
             template <typename sub> requires (impl::IsSub<sub>::val)
             friend auto gradient(const sub &x, const Variable<typename sub::type> &d);
 
-            auto toString() const -> std::string {
-                return "(" + lhs.toString() + "-" + rhs.toString() + ")";
-            }
+            template <typename sub> requires (impl::IsSub<sub>::val)
+            friend auto toString(const sub &x) -> std::string;
         private:
             Lhs lhs;
             Rhs rhs;
@@ -62,6 +61,11 @@ namespace grad::sym {
         using dtype = Sub<ldiff, rdiff>;
 
         return dtype{gradient(x.lhs, d), gradient(x.rhs, d)};
+    }
+
+    template <typename sub> requires (impl::IsSub<sub>::val)
+    auto toString(const sub &x) -> std::string {
+        return "(" + x.lhs.toString() + "-" + x.rhs.toString() + ")";
     }
 }
 

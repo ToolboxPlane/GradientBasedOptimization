@@ -12,9 +12,11 @@ if (GTest_FOUND)
             Symbolic/Div.cpp
             Symbolic/Mul.cpp
             Symbolic/Operators.cpp
+            Symbolic/Util.cpp
             Symbolic/Variable.cpp
             Symbolic/Functions/Sin.cpp
             Symbolic/Functions/Cos.cpp
+            Symbolic/Functions/Tan.cpp
             Optimization/SimpleGradientDescent.cpp
             Optimization/Momentum.cpp)
 
