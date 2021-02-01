@@ -1,6 +1,7 @@
+#include "Symbolic/Add.hpp"
+
 #include <gtest/gtest.h>
 
-#include "Symbolic/Add.hpp"
 #include "Symbolic/Constant.hpp"
 
 TEST(Add, Expression) {
@@ -12,7 +13,7 @@ TEST(Add, Resolve) {
     grad::sym::Constant<int> a{17};
     grad::sym::Constant<int> b{42};
     grad::sym::Add<decltype(a), decltype(b)> add{a, b};
-    EXPECT_EQ(add.resolve(), 17+42);
+    EXPECT_EQ(add.resolve(), 17 + 42);
 }
 
 TEST(Add, GradA) {

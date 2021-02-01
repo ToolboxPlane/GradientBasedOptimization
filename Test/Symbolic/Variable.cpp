@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
-
 #include "Symbolic/Variable.hpp"
+
+#include <gtest/gtest.h>
 
 TEST(Variable, Expression) {
     EXPECT_TRUE(grad::sym::IsExpression<grad::sym::Variable<int>>::val);

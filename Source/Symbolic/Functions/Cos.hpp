@@ -7,41 +7,42 @@
 #ifndef GRADIENTOPTIMIZATION_COS_HPP
 #define GRADIENTOPTIMIZATION_COS_HPP
 
-#include <cmath>
 #include <Symbolic/Mul.hpp>
+#include <cmath>
 
+#include "../Constant.hpp"
 #include "../Expression.hpp"
 #include "../Variable.hpp"
-#include "../Constant.hpp"
-
 #include "Sin.hpp"
 
 namespace grad::sym {
-    template <Expression Expr>
+    template<Expression Expr>
     class Sin;
 
-    template <Expression Expr>
+    template<Expression Expr>
     class Cos {
-        public:
-            using type = typename Expr::type;
+      public:
+        using type = typename Expr::type;
 
-            explicit Cos(Expr expr);
+        explicit Cos(Expr expr);
 
-            auto resolve() const -> type;
+        auto resolve() const -> type;
 
-            template<Expression Expr_>
-            friend auto gradient(const Cos<Expr_> &x, const Variable<typename Expr_::type> &d);
+        template<Expression Expr_>
+        friend auto gradient(const Cos<Expr_> &x, const Variable<typename Expr_::type> &d);
 
-            template<Expression Expr_>
-            friend auto toString(const Cos<Expr_> &x) -> std::string;
+        template<Expression Expr_>
+        friend auto toString(const Cos<Expr_> &x) -> std::string;
 
-            static constexpr auto isConstant() -> bool;
-        private:
-            Expr expr;
+        static constexpr auto isConstant() -> bool;
+
+      private:
+        Expr expr;
     };
 
     template<Expression Expr>
-    Cos<Expr>::Cos(Expr expr) : expr{expr} {}
+    Cos<Expr>::Cos(Expr expr) : expr{expr} {
+    }
 
     template<Expression Expr>
     auto Cos<Expr>::resolve() const -> type {
@@ -62,6 +63,6 @@ namespace grad::sym {
     constexpr auto Cos<Expr>::isConstant() -> bool {
         return Expr::isConstant();
     }
-}
+} // namespace grad::sym
 
-#endif //GRADIENTOPTIMIZATION_COS_HPP
+#endif // GRADIENTOPTIMIZATION_COS_HPP

@@ -10,26 +10,25 @@
 #include <vector>
 
 #include "../Symbolic/Expression.hpp"
-#include "../Symbolic/Variable.hpp"
 #include "../Symbolic/Operators.hpp"
+#include "../Symbolic/Variable.hpp"
 
 namespace grad::opt {
     template<sym::Expression Expr, typename X, typename Nu = double>
     class SimpleGradientDescent {
-        public:
-            using T = typename Expr::type;
-            using XVar = sym::Variable<X>;
-            using Grad = decltype(sym::gradient(std::declval<Expr>(), std::declval<XVar>()));
-            using Update = sym::Sub<XVar, sym::Mul<Grad, sym::Constant<Nu>>>;
+      public:
+        using T = typename Expr::type;
+        using XVar = sym::Variable<X>;
+        using Grad = decltype(sym::gradient(std::declval<Expr>(), std::declval<XVar>()));
+        using Update = sym::Sub<XVar, sym::Mul<Grad, sym::Constant<Nu>>>;
 
-            SimpleGradientDescent(Expr expr, std::vector<XVar> xs, Nu nu);
+        SimpleGradientDescent(Expr expr, std::vector<XVar> xs, Nu nu);
 
-            void step();
+        void step();
 
-        private:
-            std::vector<Update> updateExprs;
-            std::vector<XVar> xs;
-
+      private:
+        std::vector<Update> updateExprs;
+        std::vector<XVar> xs;
     };
 
 
@@ -47,7 +46,7 @@ namespace grad::opt {
             updates.emplace_back(updateExpr.resolve());
         }
 
-        for (auto c=0U; c<xs.size(); ++c) {
+        for (auto c = 0U; c < xs.size(); ++c) {
             xs[c].set(updates[c]);
         }
     }
@@ -59,7 +58,7 @@ namespace grad::opt {
         }
     } make_sgd;
 
-}
+} // namespace grad::opt
 
 
-#endif //GRADIENTOPTIMIZATION_SIMPLEGRADIENTDESCENT_HPP
+#endif // GRADIENTOPTIMIZATION_SIMPLEGRADIENTDESCENT_HPP

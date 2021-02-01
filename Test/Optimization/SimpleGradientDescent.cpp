@@ -1,8 +1,8 @@
+#include "Optimization/SimpleGradientDescent.hpp"
+
 #include <gtest/gtest.h>
 
 #include "Symbolic/Operators.hpp"
-
-#include "Optimization/SimpleGradientDescent.hpp"
 
 
 TEST(SimpleGradientDescent, SquareIterationsSingleStep) {

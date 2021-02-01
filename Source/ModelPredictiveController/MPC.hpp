@@ -7,43 +7,45 @@
 #ifndef GRADIENTOPTIMIZATION_MPC_HPP
 #define GRADIENTOPTIMIZATION_MPC_HPP
 
+#include <iostream>
 #include <utility>
 #include <vector>
-#include <iostream>
 
-#include "../Symbolic/Expression.hpp"
 #include "../Optimization/Optimizer.hpp"
-
+#include "../Symbolic/Expression.hpp"
 #include "../Symbolic/Variable.hpp"
 
 namespace grad::mpc {
     namespace impl {
-        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X,
-                opt::Optimizer Opt>
+        template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
         class MPC {
-            public:
-                using T = typename Error::type;
-                using UVar = sym::Variable<U>;
+          public:
+            using T = typename Error::type;
+            using UVar = sym::Variable<U>;
 
-                MPC(Error error, std::vector<UVar> us, X x, Opt opt);
+            MPC(Error error, std::vector<UVar> us, X x, Opt opt);
 
-                template<typename Term>
-                auto optimize(Term term);
+            template<typename Term>
+            auto optimize(Term term);
 
-                auto getU(std::size_t t = 0) const -> UVar;
+            auto getU(std::size_t t = 0) const -> UVar;
 
-                auto getX() const -> X;
+            auto getX() const -> X;
 
-            private:
-                Error error;
-                std::vector<UVar> us;
-                X x;
-                Opt opt;
+          private:
+            Error error;
+            std::vector<UVar> us;
+            X x;
+            Opt opt;
         };
 
         template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
-        MPC<N, Error, U, X, Opt>::MPC(Error error, std::vector<UVar> us, X x, Opt opt) : error{error}, us{std::move(us)},
-                                                                                       x{x}, opt{opt} {}
+        MPC<N, Error, U, X, Opt>::MPC(Error error, std::vector<UVar> us, X x, Opt opt) :
+            error{error},
+            us{std::move(us)},
+            x{x},
+            opt{opt} {
+        }
 
         template<std::size_t N, sym::Expression Error, typename U, sym::Expression X, opt::Optimizer Opt>
         template<typename Term>
@@ -75,16 +77,14 @@ namespace grad::mpc {
                 return j(nextX, u, t);
             }
         }
-    }
+    } // namespace impl
 
-    template<std::size_t steps, typename U, typename F, typename J, sym::Expression X,
-            typename MakeOptim, typename... OptimArgs>
-    auto make_mpc(F f, J j, X x, MakeOptim makeOptim, OptimArgs&&... optimArgs) {
+    template<std::size_t steps, typename U, typename F, typename J, sym::Expression X, typename MakeOptim,
+             typename... OptimArgs>
+    auto make_mpc(F f, J j, X x, MakeOptim makeOptim, OptimArgs &&...optimArgs) {
         using UVar = sym::Variable<U>;
-        static_assert(std::is_invocable_v<F, X, UVar, std::size_t>,
-                      "f must be of the form f(x, u, t)");
-        static_assert(std::is_invocable_v<J, X, UVar, std::size_t>,
-                      "j must be of the form j(x, u, t)");
+        static_assert(std::is_invocable_v<F, X, UVar, std::size_t>, "f must be of the form f(x, u, t)");
+        static_assert(std::is_invocable_v<J, X, UVar, std::size_t>, "j must be of the form j(x, u, t)");
 
         std::vector<UVar> us;
         for (auto c = 0U; c < steps; ++c) {
@@ -97,12 +97,12 @@ namespace grad::mpc {
         return impl::MPC<steps, decltype(error), U, X, decltype(optim)>{error, us, x, optim};
     }
 
-    template<std::size_t steps, typename U, typename X, typename F, typename J,
-            typename MakeOptim, typename... OptimArgs>
-    auto make_mpc(F f, J j, MakeOptim makeOptim, OptimArgs&&... optimArgs) {
+    template<std::size_t steps, typename U, typename X, typename F, typename J, typename MakeOptim,
+             typename... OptimArgs>
+    auto make_mpc(F f, J j, MakeOptim makeOptim, OptimArgs &&...optimArgs) {
         auto x = sym::Variable<X>{0};
         return make_mpc<steps, U>(f, j, x, makeOptim, std::forward<OptimArgs>(optimArgs)...);
     }
-}
+} // namespace grad::mpc
 
-#endif //GRADIENTOPTIMIZATION_MPC_HPP
+#endif // GRADIENTOPTIMIZATION_MPC_HPP

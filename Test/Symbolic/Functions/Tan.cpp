@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
-#include <cmath>
-
 #include "Symbolic/Functions/Tan.hpp"
+
+#include <cmath>
+#include <gtest/gtest.h>
 
 #include "Symbolic/Constant.hpp"
 

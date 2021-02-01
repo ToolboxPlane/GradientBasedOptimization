@@ -7,34 +7,35 @@
 #ifndef GRADIENTOPTIMIZATION_TAN_HPP
 #define GRADIENTOPTIMIZATION_TAN_HPP
 
-#include "../Expression.hpp"
-
 #include "../Div.hpp"
+#include "../Expression.hpp"
 #include "Sin.hpp"
 
 namespace grad::sym {
-    template <Expression Expr>
+    template<Expression Expr>
     class Tan {
-        public:
-            using type = typename Expr::type;
+      public:
+        using type = typename Expr::type;
 
-            explicit Tan(Expr expr);
+        explicit Tan(Expr expr);
 
-            auto resolve() const -> type;
+        auto resolve() const -> type;
 
-            template<Expression Expr_>
-            friend auto gradient(const Tan<Expr_> &x, const Variable<typename Expr_::type> &d);
+        template<Expression Expr_>
+        friend auto gradient(const Tan<Expr_> &x, const Variable<typename Expr_::type> &d);
 
-            template<Expression Expr_>
-            friend auto toString(const Tan<Expr_> &x) -> std::string;
+        template<Expression Expr_>
+        friend auto toString(const Tan<Expr_> &x) -> std::string;
 
-            static constexpr auto isConstant() -> bool;
-        private:
-            Expr expr;
+        static constexpr auto isConstant() -> bool;
+
+      private:
+        Expr expr;
     };
 
     template<Expression Expr>
-    Tan<Expr>::Tan(Expr expr) : expr{expr} {}
+    Tan<Expr>::Tan(Expr expr) : expr{expr} {
+    }
 
     template<Expression Expr>
     auto Tan<Expr>::resolve() const -> type {
@@ -55,6 +56,6 @@ namespace grad::sym {
     constexpr auto Tan<Expr>::isConstant() -> bool {
         return Expr::isConstant();
     }
-}
+} // namespace grad::sym
 
-#endif //GRADIENTOPTIMIZATION_TAN_HPP
+#endif // GRADIENTOPTIMIZATION_TAN_HPP

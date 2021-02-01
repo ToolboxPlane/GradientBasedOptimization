@@ -11,30 +11,33 @@
 #include "Variable.hpp"
 
 namespace grad::sym {
-    template<typename> class Variable;
+    template<typename>
+    class Variable;
 
-    template <typename T>
+    template<typename T>
     class Constant {
-        public:
-            using type = T;
+      public:
+        using type = T;
 
-            explicit Constant(T val);
+        explicit Constant(T val);
 
-            auto resolve() const -> T;
+        auto resolve() const -> T;
 
-            template <typename T_>
-            friend auto gradient(const Constant<T_>&, const Variable<T_>&);
+        template<typename T_>
+        friend auto gradient(const Constant<T_> &, const Variable<T_> &);
 
-            template <typename T_>
-            friend auto toString(const Constant<T_> &x) -> std::string;
+        template<typename T_>
+        friend auto toString(const Constant<T_> &x) -> std::string;
 
-            static constexpr auto isConstant() -> bool;
-        private:
-            T val;
+        static constexpr auto isConstant() -> bool;
+
+      private:
+        T val;
     };
 
     template<typename T>
-    Constant<T>::Constant(T val) : val{val} {}
+    Constant<T>::Constant(T val) : val{val} {
+    }
 
     template<typename T>
     auto Constant<T>::resolve() const -> T {
@@ -42,11 +45,11 @@ namespace grad::sym {
     }
 
     template<typename T_>
-    auto gradient(const Constant<T_>&, const Variable<T_>&) {
+    auto gradient(const Constant<T_> &, const Variable<T_> &) {
         return Constant<T_>{0};
     }
 
-    template <typename T_>
+    template<typename T_>
     auto toString(const Constant<T_> &x) -> std::string {
         return std::to_string(x.val);
     }
@@ -56,6 +59,6 @@ namespace grad::sym {
         return true;
     }
 
-}
+} // namespace grad::sym
 
-#endif //GRADIENTOPTIMIZATION_CONSTANT_HPP
+#endif // GRADIENTOPTIMIZATION_CONSTANT_HPP

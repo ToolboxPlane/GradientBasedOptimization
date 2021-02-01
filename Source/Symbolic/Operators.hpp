@@ -8,8 +8,8 @@
 #define GRADIENTOPTIMIZATION_OPERATORS_HPP
 
 #include "Add.hpp"
-#include "Mul.hpp"
 #include "Div.hpp"
+#include "Mul.hpp"
 #include "Sub.hpp"
 
 namespace grad::sym {
@@ -75,6 +75,6 @@ namespace grad::sym {
     auto operator-(Lhs lhs, Rhs rhs) -> Sub<Lhs, Constant<Rhs>> {
         return Sub<Lhs, Constant<Rhs>>{lhs, Constant<Rhs>{rhs}};
     }
-}
+} // namespace grad::sym
 
-#endif //GRADIENTOPTIMIZATION_OPERATORS_HPP
+#endif // GRADIENTOPTIMIZATION_OPERATORS_HPP

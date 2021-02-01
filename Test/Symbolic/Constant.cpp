@@ -5,9 +5,9 @@
  * Description here TODO
  */
 
-#include <gtest/gtest.h>
-
 #include "Symbolic/Constant.hpp"
+
+#include <gtest/gtest.h>
 
 TEST(Constant, Expression) {
     EXPECT_TRUE((grad::sym::IsExpression<grad::sym::Constant<int>>::val));

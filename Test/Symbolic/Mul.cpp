@@ -1,8 +1,8 @@
+#include "Symbolic/Mul.hpp"
+
 #include <gtest/gtest.h>
 
 #include "Symbolic/Constant.hpp"
-
-#include "Symbolic/Mul.hpp"
 
 TEST(Mul, Expression) {
     using Const = grad::sym::Constant<int>;
@@ -13,7 +13,7 @@ TEST(Mul, Resolve) {
     grad::sym::Constant<int> a{17};
     grad::sym::Constant<int> b{42};
     grad::sym::Mul<decltype(a), decltype(b)> mul{a, b};
-    EXPECT_EQ(mul.resolve(), 17*42);
+    EXPECT_EQ(mul.resolve(), 17 * 42);
 }
 
 TEST(Mul, GradA) {
@@ -41,7 +41,7 @@ TEST(Mul, GradNone) {
 TEST(Mul, GradBoth) {
     grad::sym::Variable<int> a{17};
     grad::sym::Mul<decltype(a), decltype(a)> mul{a, a};
-    EXPECT_EQ(grad::sym::gradient(mul, a).resolve(), 2*17);
+    EXPECT_EQ(grad::sym::gradient(mul, a).resolve(), 2 * 17);
 }
 
 

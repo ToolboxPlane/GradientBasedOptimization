@@ -26,6 +26,6 @@ namespace std { // NOLINT everything is fine specialization for custom types is 
     auto tan(Expr expr) {
         return grad::sym::Tan<Expr>{expr};
     }
-}
+} // namespace std
 
-#endif //GRADIENTOPTIMIZATION_FUNCTIONS_HPP
+#endif // GRADIENTOPTIMIZATION_FUNCTIONS_HPP

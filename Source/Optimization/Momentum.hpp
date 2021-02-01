@@ -10,27 +10,27 @@
 #include <vector>
 
 #include "../Symbolic/Expression.hpp"
-#include "../Symbolic/Variable.hpp"
 #include "../Symbolic/Operators.hpp"
+#include "../Symbolic/Variable.hpp"
 
 namespace grad::opt {
     template<sym::Expression Expr, typename X, typename Param = double>
     class Momentum {
-        public:
-            using T = typename Expr::type;
-            using XVar = sym::Variable<X>;
-            using Grad = decltype(sym::gradient(std::declval<Expr>(), std::declval<XVar>()));
-            using DeltaX = sym::Sub<sym::Mul<sym::Constant<Param>, XVar>, sym::Mul<sym::Constant<Param>, Grad>>;
-            using Update = sym::Add<XVar, DeltaX>;
+      public:
+        using T = typename Expr::type;
+        using XVar = sym::Variable<X>;
+        using Grad = decltype(sym::gradient(std::declval<Expr>(), std::declval<XVar>()));
+        using DeltaX = sym::Sub<sym::Mul<sym::Constant<Param>, XVar>, sym::Mul<sym::Constant<Param>, Grad>>;
+        using Update = sym::Add<XVar, DeltaX>;
 
-            Momentum(Expr expr, std::vector<XVar> xs, Param nu, Param alpha);
+        Momentum(Expr expr, std::vector<XVar> xs, Param nu, Param alpha);
 
-            void step();
+        void step();
 
-        private:
-            std::vector<Update> updateExprs;
-            std::vector<XVar> lastDeltaX;
-            std::vector<XVar> xs;
+      private:
+        std::vector<Update> updateExprs;
+        std::vector<XVar> lastDeltaX;
+        std::vector<XVar> xs;
     };
 
     template<sym::Expression Expr, typename X, typename Param>
@@ -48,7 +48,7 @@ namespace grad::opt {
             updates.emplace_back(updateExpr.resolve());
         }
 
-        for (auto c=0U; c<xs.size(); ++c) {
+        for (auto c = 0U; c < xs.size(); ++c) {
             lastDeltaX[c].set(updates[c] - xs[c].resolve());
             xs[c].set(updates[c]);
         }
@@ -60,6 +60,6 @@ namespace grad::opt {
             return Momentum<Expr, X, Param>{expr, x, nu, alpha};
         }
     } make_momentum;
-}
+} // namespace grad::opt
 
-#endif //GRADIENTOPTIMIZATION_MOMENTUM_HPP
+#endif // GRADIENTOPTIMIZATION_MOMENTUM_HPP

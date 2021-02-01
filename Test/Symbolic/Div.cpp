@@ -1,8 +1,8 @@
+#include "Symbolic/Div.hpp"
+
 #include <gtest/gtest.h>
 
 #include "Symbolic/Constant.hpp"
-
-#include "Symbolic/Div.hpp"
 
 TEST(Div, Expression) {
     using Const = grad::sym::Constant<int>;
@@ -27,7 +27,7 @@ TEST(Div, GradB) {
     grad::sym::Variable<int> a{17};
     grad::sym::Variable<int> b{42};
     grad::sym::Div<decltype(a), decltype(b)> div{a, b};
-    EXPECT_EQ(grad::sym::gradient(div, b).resolve(), 17/(42*42));
+    EXPECT_EQ(grad::sym::gradient(div, b).resolve(), 17 / (42 * 42));
 }
 
 TEST(Div, GradNone) {
@@ -66,4 +66,3 @@ TEST(Div, IsConstantVV) {
     using V = grad::sym::Variable<int>;
     EXPECT_FALSE((grad::sym::Div<V, V>::isConstant()));
 }
-

@@ -1,8 +1,8 @@
+#include "Optimization/Momentum.hpp"
+
 #include <gtest/gtest.h>
 
 #include "Symbolic/Operators.hpp"
-
-#include "Optimization/Momentum.hpp"
 
 TEST(Momentum, SquareIterationsSingleStep) {
     auto x = grad::sym::Variable<double>{10};

@@ -1,6 +1,7 @@
+#include "Symbolic/Sub.hpp"
+
 #include <gtest/gtest.h>
 
-#include "Symbolic/Sub.hpp"
 #include "Symbolic/Constant.hpp"
 
 TEST(Sub, Expression) {
@@ -12,7 +13,7 @@ TEST(Sub, Resolve) {
     grad::sym::Constant<int> a{17};
     grad::sym::Constant<int> b{42};
     grad::sym::Sub<decltype(a), decltype(b)> sub{a, b};
-    EXPECT_EQ(sub.resolve(), 17-42);
+    EXPECT_EQ(sub.resolve(), 17 - 42);
 }
 
 TEST(Sub, GradA) {

@@ -14,6 +14,6 @@ namespace grad::opt {
     concept Optimizer = requires(T t) {
         {t.step()};
     };
-}
+} // namespace grad::opt
 
-#endif //GRADIENTOPTIMIZATION_OPTIMIZER_HPP
+#endif // GRADIENTOPTIMIZATION_OPTIMIZER_HPP

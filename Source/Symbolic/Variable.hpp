@@ -9,37 +9,39 @@
 
 #include <memory>
 
-#include "Expression.hpp"
 #include "Constant.hpp"
+#include "Expression.hpp"
 
 namespace grad::sym {
     template<typename T>
     class Constant;
 
-    template <typename T>
+    template<typename T>
     class Variable {
-        public:
-            using type = T;
+      public:
+        using type = T;
 
-            explicit Variable(T val);
+        explicit Variable(T val);
 
-            auto resolve() const -> T;
+        auto resolve() const -> T;
 
-            void set(T t);
+        void set(T t);
 
-            template <typename T_>
-            friend auto gradient(const Variable<T_> &x, const Variable<T_> &d);
+        template<typename T_>
+        friend auto gradient(const Variable<T_> &x, const Variable<T_> &d);
 
-            template <typename T_>
-            friend auto toString(const Variable<T_> &x) -> std::string;
+        template<typename T_>
+        friend auto toString(const Variable<T_> &x) -> std::string;
 
-            static constexpr auto isConstant() -> bool;
-        private:
-            std::shared_ptr<T> val;
+        static constexpr auto isConstant() -> bool;
+
+      private:
+        std::shared_ptr<T> val;
     };
 
     template<typename T>
-    Variable<T>::Variable(T val) : val{std::make_shared<T>(std::move(val))}{}
+    Variable<T>::Variable(T val) : val{std::make_shared<T>(std::move(val))} {
+    }
 
     template<typename T>
     auto Variable<T>::resolve() const -> T {
@@ -56,7 +58,7 @@ namespace grad::sym {
         return Constant<T_>(x.val.get() == d.val.get() ? 1 : 0);
     }
 
-    template <typename T_>
+    template<typename T_>
     auto toString(const Variable<T_> &x) -> std::string {
         return "{" + std::to_string(x->val) + "}";
     }
@@ -65,6 +67,6 @@ namespace grad::sym {
     constexpr auto Variable<T>::isConstant() -> bool {
         return false;
     }
-}
+} // namespace grad::sym
 
-#endif //GRADIENTOPTIMIZATION_VARIABLE_HPP
+#endif // GRADIENTOPTIMIZATION_VARIABLE_HPP
