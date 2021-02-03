@@ -14,6 +14,17 @@ namespace grad::opt {
     concept Optimizer = requires(T t) {
         {t.step()};
     };
+
+    template<typename T>
+    struct IsOptimizer {
+        static constexpr auto val = false;
+    };
+
+    template<Optimizer optimizer>
+    struct IsOptimizer<optimizer> {
+        static constexpr auto val = true;
+    };
+
 } // namespace grad::opt
 
 #endif // GRADIENTOPTIMIZATION_OPTIMIZER_HPP

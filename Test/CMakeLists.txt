@@ -8,6 +8,7 @@ if (GTest_FOUND)
     set(TEST_SOURCES
             Integration/Euler.cpp
             ModelPredictiveController/MPC.cpp
+            ModelPredictiveController/Discretizer.cpp
             Symbolic/Add.cpp
             Symbolic/Constant.cpp
             Symbolic/Div.cpp

@@ -51,7 +51,7 @@ namespace grad::opt {
         }
     }
 
-    struct {
+    struct make_sgd_impl {
         template<sym::Expression Expr, typename X, typename Nu>
         auto operator()(Expr expr, std::vector<sym::Variable<X>> x, Nu nu) {
             return SimpleGradientDescent<Expr, X, Nu>{expr, x, nu};

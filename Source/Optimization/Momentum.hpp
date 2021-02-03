@@ -54,7 +54,7 @@ namespace grad::opt {
         }
     }
 
-    struct {
+    struct make_momentum_impl {
         template<sym::Expression Expr, typename X, typename Param>
         auto operator()(Expr expr, std::vector<sym::Variable<X>> x, Param nu, Param alpha) {
             return Momentum<Expr, X, Param>{expr, x, nu, alpha};
